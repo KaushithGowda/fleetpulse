@@ -1,4 +1,11 @@
 {
   "name": "fleetpulse",
-  "displayName": "fleetpulse"
+  "displayName": "fleetpulse",
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "142056b0-ac84-4b2b-90dc-4456ae625944"
+      }
+    }
+  }
 }
