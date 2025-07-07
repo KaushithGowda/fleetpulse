@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CompanyList from '@/src/screens/Company/CompanyList';
 import DriverList from '@/src/screens/Driver/DriverList';
@@ -70,42 +69,44 @@ function getTabBarIcon(routeName: string) {
 }
 
 export default function BottomTabs() {
-  const { colorScheme, toggleColorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
 
   return (
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: getTabBarIcon(route.name),
-          tabBarActiveTintColor: '#e91e63',
-          headerShown: true,
-          tabBarShowLabel: true,
-          // eslint-disable-next-line react/no-unstable-nested-components
-          headerRight: () => (
-            <MaterialIcon
-              name={colorScheme === 'dark' ? 'light-mode' : 'dark-mode'}
-              size={20}
-              color={'#000'}
-              onPress={() => toggleColorScheme()}
-            />
-          ),
-          tabBarInactiveTintColor: 'gray',
-          tabBarStyle: {
-            backgroundColor: colorScheme === 'dark' ? '#181719' : '#ffffff',
-            position: 'absolute',
-            height: 70,
-            paddingTop: 15,
-            paddingHorizontal: 10,
-            borderColor: colorScheme === 'dark' ? '#181719' : '#ffffff',
-          },
-          animation: 'fade',
-          freezeOnBlur: true,
-          tabBarPosition: 'bottom',
-        })}
-      >
-        <Tab.Screen name="Home" component={Home} />
-        <Tab.Screen name="Companies" component={CompanyList} />
-        <Tab.Screen name="Drivers" component={DriverList} />
-        <Tab.Screen name="Settings" component={Settings} />
-      </Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: getTabBarIcon(route.name),
+        tabBarActiveTintColor: colorScheme === 'dark' ? 'white' : 'black',
+        tabBarInactiveTintColor: 'gray',
+        tabBarShowLabel: false,
+        headerShown: true,
+        headerTitleAlign: 'left',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+          fontSize: 24,
+          color: colorScheme === 'dark' ? 'white' : 'black',
+        },
+        headerStyle: {
+          backgroundColor: colorScheme === 'dark' ? 'black' : 'white',
+          shadowOpacity: 0,
+        },
+        tabBarStyle: {
+          backgroundColor: colorScheme === 'dark' ? 'black' : 'gray',
+          position: 'absolute',
+          height: 70,
+          paddingTop: 5,
+          paddingHorizontal: 10,
+          zIndex: 50,
+          borderWidth: 0,
+        },
+        animation: 'fade',
+        freezeOnBlur: true,
+        tabBarPosition: 'bottom',
+      })}
+    >
+      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Companies" component={CompanyList} />
+      <Tab.Screen name="Drivers" component={DriverList} />
+      <Tab.Screen name="Settings" component={Settings} />
+    </Tab.Navigator>
   );
 }
