@@ -25,6 +25,7 @@
     "react-native-gifted-charts": "^1.4.61",
     "react-native-keychain": "^10.0.0",
     "react-native-linear-gradient": "^2.8.3",
+    "react-native-paper": "^5.13.1",
     "react-native-reanimated": "^3.18.0",
     "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "^4.11.1",
@@ -54,6 +55,7 @@
     "jest": "^29.6.3",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.5.14",
+    "react-native-asset": "^2.1.1",
     "react-test-renderer": "19.1.0",
     "typescript": "5.0.4"
   },
