@@ -103,7 +103,7 @@ export default function BottomTabs() {
         tabBarPosition: 'bottom',
       })}
     >
-      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Home" component={Home}/>
       <Tab.Screen name="Companies" component={CompanyList} />
       <Tab.Screen name="Drivers" component={DriverList} />
       <Tab.Screen name="Settings" component={Settings} />

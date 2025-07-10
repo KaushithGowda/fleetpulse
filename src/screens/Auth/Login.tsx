@@ -1,199 +1,140 @@
-// import { useEffect, useMemo, useRef, useState } from 'react'
-// import { KeyboardAvoidingView, Platform, TextInput, View } from 'react-native'
-// import { useForm } from 'react-hook-form'
+import { useEffect, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+} from 'react-native';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema } from '@/src/schemas/login.schema';
+import { AuthTransition } from '@/src/components/transistions/auth-transition';
+import { useCredentialsLogin } from '@/src/hooks/auth/useCredentialsLogin';
+import { showToast } from '@/src/utils/showToast';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { CustomTextInput } from '@/src/components/FormElements/CustomTextInput';
+import { CustomButton } from '@/src/components/FormElements/CustomButton';
 
-// import { InputFieldRef } from '@/types'
-
-// import { loginSchema } from '@/schemas'
-// import { z } from 'zod'
-// import { zodResolver } from '@hookform/resolvers/zod'
-
-// import { VStack } from '@/components/ui/vstack'
-// import { Input, InputField } from '@/components/ui/input'
-// import { FormControl } from '@/components/ui/form-control'
-// import { Text } from '@/components/ui/text'
-// import { Button, ButtonText } from '@/components/ui/button'
-// import { HStack } from '@/components/ui/hstack'
-
-// import { useRouter } from 'expo-router'
-
-// import { AuthTransition } from '@/components/transistions/auth-transition'
-
-// import { useCredentialsLogin } from '@/hooks/auth/useCredentialsLogin'
-// import { showToast } from '@/utils/showToast'
-// import { useGoogleAuth } from '@/hooks/auth/useGoogleAuth'
-
-// import { Keyboard, TouchableWithoutFeedback } from 'react-native'
-// import { SafeAreaView } from 'react-native-safe-area-context'
+type FormData = z.infer<typeof loginSchema>;
 
 const Login = () => {
-  return null
-  const emailInputRef = useRef<TextInput>(null)
-  const passwordInputRef = useRef<TextInput>(null)
-  const router = useRouter()
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const emailInputRef = useRef<TextInput | null>(null);;
+  const passwordInputRef = useRef<TextInput | null>(null);;
+  const navigation = useNavigation<NativeStackNavigationProp<any>>()
 
   const {
     login: credLogin,
     error: credError,
     success: credSuccess,
-  } = useCredentialsLogin()
-  const {
-    promptAsync: googlePromptAsync,
-    error: googleError,
-    success: googleSuccess,
-  } = useGoogleAuth()
-
-  const form = useMemo(
-    () => ({
-      resolver: zodResolver(loginSchema),
-      defaultValues: {
-        email: '',
-        password: '',
-      },
-    }),
-    []
-  )
+  } = useCredentialsLogin();
 
   const {
     handleSubmit,
+    register,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
-  } = useForm<z.infer<typeof loginSchema>>(form)
-
-  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    await credLogin(values.email, values.password)
-  }
+  } = useForm<FormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
   useEffect(() => {
-    if (credError) showToast({ isError: true, errorMsg: credError })
-    if (googleError) showToast({ isError: true, errorMsg: googleError })
-    if (credSuccess) showToast({ isSuccess: true, successMsg: credSuccess })
-    if (googleSuccess) showToast({ isSuccess: true, successMsg: googleSuccess })
-  }, [credError, googleError, credSuccess, googleSuccess])
+    register('email');
+    register('password');
+  }, [register]);
+
+  useEffect(() => {
+    if (credError) showToast({ isError: true, errorMsg: credError });
+    if (credSuccess) showToast({ isSuccess: true, successMsg: credSuccess });
+  }, [credError, credSuccess]);
+
+  const onSubmit = async (data: FormData) => {
+    await credLogin(data.email, data.password);
+  };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className='flex-1'
-      >
-        <AuthTransition>
-          <VStack className='flex-1 justify-center' space='2xl'>
-            <VStack>
-              <Text className='text-4xl font-bold text-typography-0 text-center'>
-                Welcome Back
-              </Text>
-              <Text className='text-lg text-typography-500 text-center'>
-                Login to your account
-              </Text>
-            </VStack>
+    <KeyboardAvoidingView
+      className="flex-1 bg-gray-100 dark:bg-black"
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <AuthTransition>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="flex-1 justify-center px-6">
+            <View className="mb-16 gap-y-1">
+              <Text className="text-4xl font-bold text-center text-gray-900 dark:text-white">Welcome Back</Text>
+              <Text className="text-lg text-center text-gray-900 dark:text-white">Login to your account</Text>
+            </View>
 
-            <VStack space='sm'>
-              <FormControl isInvalid={!!errors.email}>
-                <Input
-                  variant='outline'
-                  size='md'
-                  className='bg-white/10 border-0 rounded-lg h-14 uppercase'
-                >
-                  <InputField
-                    ref={emailInputRef as InputFieldRef}
-                    autoCapitalize='none'
-                    autoComplete='email'
-                    textContentType='emailAddress'
-                    keyboardType='email-address'
-                    onBlur={false}
-                    returnKeyType='next'
-                    placeholder='Email'
-                    placeholderTextColor='#9CA3AF'
-                    inputMode='email'
-                    onChangeText={(text) => setValue('email', text)}
-                    onSubmitEditing={() => passwordInputRef.current?.focus()}
-                    className='text-typography-50 uppercase'
-                  />
-                </Input>
-                {errors.email && (
-                  <Text className='text-error-400 text-center font-medium text-sm mt-1'>
-                    {errors.email.message}
-                  </Text>
-                )}
-              </FormControl>
+            <View className="gap-y-2">
+              <CustomTextInput
+                ref={emailInputRef}
+                placeholder="Email"
+                returnKeyType="next"
+                keyboardType="email-address"
+                onChangeText={text => setValue('email', text)}
+                onSubmitEditing={() => passwordInputRef.current?.focus()}
+                autoCapitalize="none"
+                autoComplete="email"
+                textContentType="emailAddress"
+                inputMode="email"
+                value={watch('email')}
+                error={errors.email}
+              />
 
-              <FormControl isInvalid={!!errors.password}>
-                <Input
-                  variant='outline'
-                  size='md'
-                  className='bg-white/10 border-0 rounded-lg h-14'
-                >
-                  <InputField
-                    ref={passwordInputRef as InputFieldRef}
-                    returnKeyType='done'
-                    placeholder='Password'
-                    placeholderTextColor='#9CA3AF'
-                    onChangeText={(text) => setValue('password', text)}
-                    secureTextEntry
-                    className='text-typography-50'
-                  />
-                </Input>
-                <Button
-                  variant='link'
-                  onPress={() => setShowPassword(!showPassword)}
-                >
-                  <ButtonText>o</ButtonText>
-                </Button>
-                {errors.password && (
-                  <Text className='text-error-400 text-center font-medium text-sm mt-1'>
-                    {errors.password.message}
-                  </Text>
-                )}
-              </FormControl>
+              <CustomTextInput
+                ref={passwordInputRef}
+                placeholder="Password"
+                returnKeyType="done"
+                keyboardType="default"
+                onChangeText={text => setValue('password', text)}
+                onSubmitEditing={handleSubmit(onSubmit)}
+                isSecureEntry={!showPassword}
+                toggleSecureEntry={() => setShowPassword(prev => !prev)}
+                inputMode="text"
+                value={watch('password')}
+                error={errors.password}
+              />
 
-              <Button
+              <CustomButton
                 onPress={handleSubmit(onSubmit)}
-                className='rounded-lg h-12 mt-2'
-                isDisabled={isSubmitting}
-              >
-                <ButtonText className='text-typography-200 font-bold'>
-                  Login
-                </ButtonText>
-              </Button>
+                disabled={isSubmitting}
+                title="Login"
+                isLoading={isSubmitting}
+              />
+            </View>
 
-              <HStack className='flex gap-4 items-center my-4'>
-                <View className='flex-1 h-px bg-background-0' />
-                <Text className='text-sm text-typography-500 capitalize'>
-                  or
+            <View className="flex-row items-center justify-center gap-2 my-5 px-5">
+              <View className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+              <Text className="text-xs text-gray-500 dark:text-white uppercase px-5">or</Text>
+              <View className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+            </View>
+
+            <View className="flex-row items-center justify-center">
+              <Text className="text-gray-900 dark:text-white">Don't have an account? </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                <Text className="text-blue-500 font-semibold text-sm">
+                  Register
                 </Text>
-                <View className='flex-1 h-px bg-background-0' />
-              </HStack>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </AuthTransition>
+    </KeyboardAvoidingView>
+  );
+};
 
-              <Button
-                onPress={() => googlePromptAsync()}
-                className='rounded-lg h-12 mt-2'
-              >
-                <ButtonText className='text-typography-200 font-medium'>
-                  Login with Google
-                </ButtonText>
-              </Button>
-
-              <HStack className='flex items-center justify-center pt-2'>
-                <Text className='text-typography-500'>
-                  Don't have an account?{' '}
-                </Text>
-                <Button
-                  onPress={() => router.push('/(auth)/register')}
-                  variant='link'
-                >
-                  <ButtonText className='text-info-500 font-medium'>
-                    Register
-                  </ButtonText>
-                </Button>
-              </HStack>
-            </VStack>
-          </VStack>
-        </AuthTransition>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
-  )
-}
-
-export default Login
+export default Login;

@@ -1,36 +1,39 @@
-// import { zodResolver } from '@hookform/resolvers/zod'
-// import { useForm } from 'react-hook-form'
-// import { z } from 'zod'
-// import { RegisterSchema } from '@/schemas'
-// import { useEffect, useState, useRef } from 'react'
-// import { TextInput } from 'react-native'
-// import { VStack } from '@/components/ui/vstack'
-// import { Input, InputField } from '@/components/ui/input'
-// import { FormControl } from '@/components/ui/form-control'
-// import { Text } from '@/components/ui/text'
-// import { Button } from '@/components/ui/button'
-// import { Link } from 'expo-router'
-// import { HStack } from '@/components/ui/hstack'
-// import { AuthTransition } from '@/components/transistions/auth-transition'
-// import { useRouter } from 'expo-router'
-// import { InputFieldRef } from '@/types'
+import React, { useEffect, useRef } from 'react'
+import {
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { registerSchema as RegisterSchema } from '@/src/schemas/register.schema'
+import { useNavigation } from '@react-navigation/native'
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { AuthTransition } from '@/src/components/transistions/auth-transition'
+import { CustomTextInput } from '@/src/components/FormElements/CustomTextInput'
+import { CustomButton } from '@/src/components/FormElements/CustomButton'
 
 const Register = () => {
-  return null
+  // const [error, setError] = useState<string | null>(null)
+  // const [success, setSuccess] = useState<string | null>(null)
 
-  const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(null)
-  const router = useRouter()
+  const nameInputRef = useRef<TextInput | null>(null)
+  const emailInputRef = useRef<TextInput | null>(null)
+  const passwordInputRef = useRef<TextInput | null>(null)
 
-  const nameInputRef = useRef<TextInput>(null)
-  const emailInputRef = useRef<TextInput>(null)
-  const passwordInputRef = useRef<TextInput>(null)
+  const navigation = useNavigation<NativeStackNavigationProp<any>>()
 
   const {
-    handleSubmit,
+    register,
     setValue,
-    reset,
+    handleSubmit,
     formState: { errors, isSubmitting },
+    watch,
   } = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
@@ -40,131 +43,104 @@ const Register = () => {
     },
   })
 
+  useEffect(() => {
+    register('name')
+    register('email')
+    register('password')
+  }, [register])
+
   const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
     try {
-      setError('')
-      setSuccess('')
+      // setError(null)
+      // setSuccess(null)
       // TODO: Call your signup API
-      setSuccess('Account created successfully')
+      console.log(values);
+
+      // setSuccess('Account created successfully')
     } catch (err: any) {
-      setError(err.message || 'Signup failed')
+      // setError(err.message || 'Signup failed')
     }
   }
 
   return (
-    <AuthTransition>
-    <VStack className='flex-1 justify-center' space='2xl'>
-      <VStack>
-        <Text className='text-4xl font-bold text-typography-0 text-center'>
-          Create Account
-        </Text>
-        <Text className='text-lg text-typography-500 text-center'>
-          Join our community today
-        </Text>
-      </VStack>
-
-      <VStack space='sm'>
-        <FormControl isInvalid={!!errors.name}>
-          <Input
-            variant='outline'
-            size='md'
-            className='bg-white/10 border-0 rounded-lg h-14'
-          >
-            <InputField
-              ref={nameInputRef as InputFieldRef}
-              returnKeyType='next'
-              placeholder='Full Name'
-              placeholderTextColor='#9CA3AF'
-              onChangeText={(text) => setValue('name', text)}
-              onSubmitEditing={() => emailInputRef.current?.focus()}
-              className='text-typography-50'
-            />
-          </Input>
-          {errors.name && (
-            <Text className='text-error-400 text-center font-medium text-sm mt-1'>
-              {errors.name.message}
-            </Text>
-          )}
-        </FormControl>
-
-        <FormControl isInvalid={!!errors.email}>
-          <Input
-            variant='outline'
-            size='md'
-            className='bg-white/10 border-0 rounded-lg h-14'
-          >
-            <InputField
-              ref={emailInputRef as InputFieldRef}
-              returnKeyType='next'
-              placeholder='Email'
-              placeholderTextColor='#9CA3AF'
-              inputMode='email'
-              onChangeText={(text) => setValue('email', text)}
-              onSubmitEditing={() => passwordInputRef.current?.focus()}
-              className='text-typography-50'
-            />
-          </Input>
-          {errors.email && (
-            <Text className='text-error-400 text-center font-medium text-sm mt-1'>
-              {errors.email.message}
-            </Text>
-          )}
-        </FormControl>
-
-        <FormControl isInvalid={!!errors.password}>
-          <Input
-            variant='outline'
-            size='md'
-            className='bg-white/10 border-0 rounded-lg h-14'
-          >
-            <InputField
-              ref={passwordInputRef as InputFieldRef}
-              returnKeyType='done'
-              placeholder='Password'
-              placeholderTextColor='#9CA3AF'
-              onChangeText={(text) => setValue('password', text)}
-              secureTextEntry
-              className='text-typography-50'
-            />
-          </Input>
-          {errors.password && (
-            <Text className='text-error-400 text-center font-medium text-sm mt-1'>
-              {errors.password.message}
-            </Text>
-          )}
-        </FormControl>
-
-        {error && (
-          <Text className='text-error-400 text-center font-medium'>
-            {error}
-          </Text>
-        )}
-        {success && (
-          <Text className='text-success-400 text-center font-medium'>
-            {success}
-          </Text>
-        )}
-
-        <Button
-          onPress={handleSubmit(onSubmit)}
-          className='rounded-lg h-12 mt-2'
-          isDisabled={isSubmitting}
+    <KeyboardAvoidingView
+      className="flex-1 bg-gray-100 dark:bg-black"
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <AuthTransition>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
         >
-          <Text className='text-typography-200 font-bold'>Create Account</Text>
-        </Button>
+          <View className="flex-1 justify-center px-6">
+            <View className='gap-y-2 mb-8'>
+              <Text className="text-4xl font-bold text-center text-gray-900 dark:text-white">
+                Create Account
+              </Text>
+              <Text className="text-lg text-center text-gray-900 dark:text-white">
+                Join our community today
+              </Text>
+            </View>
 
-        <HStack className='flex items-center justify-center pt-4'>
-          <Text className='text-typography-500'>Already have an account? </Text>
-          <Button
-            onPress={() => router.push('/(auth)/login')}
-            variant='link'
-          >
-            <Text className='text-info-500 font-medium'>Login</Text>
-          </Button>
-        </HStack>
-      </VStack>
-    </VStack>
-    </AuthTransition>
+            <View className="gap-y-2">
+              <CustomTextInput
+                ref={nameInputRef}
+                placeholder="Full Name"
+                returnKeyType="next"
+                keyboardType="default"
+                onChangeText={(text) => setValue('name', text, { shouldValidate: true })}
+                onSubmitEditing={() => emailInputRef.current?.focus()}
+                autoCapitalize="words"
+                inputMode="text"
+                value={watch('name')}
+                error={errors.name}
+              />
+
+              <CustomTextInput
+                ref={emailInputRef}
+                returnKeyType="next"
+                keyboardType="email-address"
+                onChangeText={(text) => setValue('email', text, { shouldValidate: true })}
+                onSubmitEditing={() => passwordInputRef.current?.focus()}
+                placeholder="Email"
+                error={errors.email}
+                value={watch('email')}
+                inputMode={'email'}
+              />
+
+              <CustomTextInput
+                ref={passwordInputRef}
+                placeholder="Password"
+                returnKeyType="done"
+                keyboardType="default"
+                onChangeText={(text) => setValue('password', text, { shouldValidate: true })}
+                onSubmitEditing={handleSubmit(onSubmit)}
+                isSecureEntry={true}
+                inputMode="text"
+                value={watch('password')}
+                error={errors.password}
+              />
+            </View>
+
+            <CustomButton
+              onPress={handleSubmit(onSubmit)}
+              disabled={isSubmitting}
+              title="Create Account"
+              isLoading={isSubmitting}
+            />
+
+            <View className="flex-row justify-center mt-4">
+              <Text className="text-gray-900 dark:text-white">Already have an account? </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                <Text className="text-blue-500 font-semibold text-sm">
+                  Login
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </AuthTransition>
+    </KeyboardAvoidingView>
   )
 }
 

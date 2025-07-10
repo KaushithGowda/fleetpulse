@@ -8,12 +8,20 @@ import { DriverType } from '@/src/types/driver';
 import { EntityTable } from '@/src/components/EntityTable';
 import { EntityBottomSheet } from '@/src/components/EntityBottomSheet';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { CustomButton } from '@/src/components/FormElements/CustomButton';
 
 const DriverList = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<any>>()
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selectedDriver, setSelectedDriver] = useState<DriverType | null>(null);
   return (
     <View className="flex-1 px-4 bg-gray-100 dark:bg-black">
+      <CustomButton
+        onPress={() => navigation.navigate('DriverForm')}
+        title='Add driver'
+      />
       <EntityTable<DriverType>
         screenType='driver'
         data={fakeDrivers}
