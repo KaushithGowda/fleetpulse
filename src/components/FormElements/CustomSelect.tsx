@@ -32,6 +32,13 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     error,
 }) => {
     const { colorScheme } = useColorScheme();
+
+    const safeData = items.map((item) => ({
+        label: item.label,
+        key: `safe-${item.value}`,
+        realValue: item.value,
+    }));
+
     return (
         <View className={`gap-y-2 ${className}`}>
             {label && (
@@ -41,14 +48,20 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
             )}
             <View className={`h-14 rounded-md bg-white dark:bg-black px-4 justify-center`}>
                 <ModalSelector
-                    data={items.map((item) => ({ label: item.label, key: item.value }))}
-                    onChange={(option) => onValueChange(option.key)}
+                    data={safeData}
+                    keyExtractor={(item) => item.key}
+                    labelExtractor={(item) => item.label}
+                    onChange={(option) => {
+                        onValueChange(option.realValue);
+                        console.log('option', option);
+                        console.log('option', option.realValue);
+                    }}
                     disabled={disabled}
                     cancelText="Cancel"
                     animationType="fade"
                     backdropPressToClose={true}
-                    initValue={!value ? placeholder : undefined}
-                    selectedKey={value}
+                    initValue={value ? items.find(i => i.value === value)?.label : placeholder}
+                    selectedKey={`safe-${value}`}
                     style={{ backgroundColor: colorScheme === 'dark' ? '#000' : '#fff', borderRadius: 8 }}
                     selectStyle={{
                         height: 56,

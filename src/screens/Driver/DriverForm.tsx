@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, { useEffect, useRef } from 'react';
 import {
     KeyboardAvoidingView,
     Platform,
@@ -17,8 +18,6 @@ import { AuthTransition } from '@/src/components/transistions/auth-transition';
 import { CustomTextInput } from '@/src/components/FormElements/CustomTextInput';
 import { CustomButton } from '@/src/components/FormElements/CustomButton';
 import { CustomDatePicker } from '@/src/components/FormElements/CustomDatePicker';
-import { CustomSelect } from '@/src/components/FormElements/CustomSelect';
-import { Country, State, City } from 'country-state-city';
 
 const driverSchema = z.object({
     firstName: z.string().min(1, 'First name is required'),
@@ -26,20 +25,14 @@ const driverSchema = z.object({
     email: z.string().email('Invalid email'),
     mobile: z.string().min(10, 'Mobile number is required'),
     licenseNumber: z.string().min(1, 'License number is required'),
-    address1: z.string().min(1, 'Address 1 is required'),
+    address1: z.string().optional(),
     address2: z.string().optional(),
     zipCode: z.string().min(1, 'Zip Code is required'),
     licenseStartDate: z.date({ required_error: 'License start date is required' }),
     dateOfBirth: z.date({ required_error: 'Date of Birth is required' }),
     country: z.string().min(1, 'Country is required'),
-    state: z.string().refine((val) => val.length > 0, {
-        message: 'State is required',
-        path: ['state'],
-    }),
-    city: z.string().refine((val) => val.length > 0, {
-        message: 'City is required',
-        path: ['city'],
-    }),
+    state: z.string().min(1, 'state is required'),
+    city: z.string().min(1, 'city is required'),
 });
 
 type DriverFormData = z.infer<typeof driverSchema>;
@@ -53,6 +46,9 @@ const DriverForm = () => {
     const address1Ref = useRef<TextInput | null>(null);
     const address2Ref = useRef<TextInput | null>(null);
     const zipRef = useRef<TextInput | null>(null);
+    const countryRef = useRef<TextInput | null>(null);
+    const stateRef = useRef<TextInput | null>(null);
+    const cityRef = useRef<TextInput | null>(null);
 
     const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
@@ -81,14 +77,6 @@ const DriverForm = () => {
         },
     });
 
-    const [selectedCountry, setSelectedCountry] = useState('');
-    const [selectedState, setSelectedState] = useState('');
-    const [selectedCity, setSelectedCity] = useState('');
-
-    const [countryList, setCountryList] = useState<{ label: string; value: string }[]>([]);
-    const [stateList, setStateList] = useState<{ label: string; value: string }[]>([]);
-    const [cityList, setCityList] = useState<{ label: string; value: string }[]>([]);
-
     useEffect(() => {
         register('firstName');
         register('lastName');
@@ -104,47 +92,6 @@ const DriverForm = () => {
         register('state');
         register('city');
     }, [register]);
-
-    useEffect(() => {
-        const countries = Country.getAllCountries().map((c) => ({
-            label: c.name,
-            value: c.isoCode,
-        }));
-        setCountryList(countries);
-    }, []);
-
-    useEffect(() => {
-        if (selectedCountry) {
-            const states = State.getStatesOfCountry(selectedCountry).map((s) => ({
-                label: s.name,
-                value: s.isoCode,
-            }));
-            setStateList(states);
-        } else {
-            setStateList([]);
-        }
-
-        setSelectedState('');
-        setSelectedCity('');
-        setCityList([]);
-        setValue('state', '', { shouldValidate: false }); // ✅ avoid premature validation
-        setValue('city', '', { shouldValidate: false });  // ✅ avoid premature validation
-    }, [selectedCountry, setValue]);
-
-    useEffect(() => {
-        if (selectedState && selectedCountry) {
-            const cities = City.getCitiesOfState(selectedCountry, selectedState).map((c) => ({
-                label: c.name,
-                value: c.name,
-            }));
-            setCityList(cities);
-        } else {
-            setCityList([]);
-        }
-
-        setSelectedCity('');
-        setValue('city', '', { shouldValidate: false }); // ✅ avoid premature validation
-    }, [selectedCountry, selectedState, setValue]);
 
     const onSubmit = (values: DriverFormData) => {
         console.log('Driver Submitted', values);
@@ -172,7 +119,7 @@ const DriverForm = () => {
                             </View>
                         </View>
 
-                        <View className="gap-y-2">
+                        <View className="gap-y-4">
                             <CustomTextInput
                                 ref={firstNameRef}
                                 placeholder="First Name"
@@ -195,6 +142,12 @@ const DriverForm = () => {
                                 value={watch('lastName')}
                                 error={errors.lastName}
                             />
+                            <CustomDatePicker
+                                placeholder="Date of Birth"
+                                value={watch('dateOfBirth')}
+                                onChange={(date) => setValue('dateOfBirth', date, { shouldValidate: true })}
+                                error={errors.dateOfBirth}
+                            />
                             <CustomTextInput
                                 ref={emailRef}
                                 placeholder="Email"
@@ -208,7 +161,7 @@ const DriverForm = () => {
                             />
                             <CustomTextInput
                                 ref={mobileRef}
-                                placeholder="Mobile #"
+                                placeholder="Mobile"
                                 returnKeyType="next"
                                 keyboardType="phone-pad"
                                 onChangeText={(text) => setValue('mobile', text, { shouldValidate: true })}
@@ -219,7 +172,7 @@ const DriverForm = () => {
                             />
                             <CustomTextInput
                                 ref={licenseRef}
-                                placeholder="License #"
+                                placeholder="License"
                                 returnKeyType="next"
                                 keyboardType="default"
                                 onChangeText={(text) => setValue('licenseNumber', text, { shouldValidate: true })}
@@ -257,56 +210,50 @@ const DriverForm = () => {
                                 error={errors.address2}
                             />
                             <CustomTextInput
-                                ref={zipRef}
-                                placeholder="Zip Code"
+                                ref={countryRef}
+                                placeholder="Country"
+                                returnKeyType="next"
+                                keyboardType="default"
+                                onChangeText={(text) => setValue('country', text, { shouldValidate: true })}
+                                onSubmitEditing={() => stateRef.current?.focus()}
+                                inputMode="text"
+                                value={watch('country')}
+                                error={errors.country}
+                            />
+                            <CustomTextInput
+                                ref={stateRef}
+                                placeholder="State"
+                                returnKeyType="next"
+                                keyboardType="default"
+                                onChangeText={(text) => setValue('state', text, { shouldValidate: true })}
+                                onSubmitEditing={() => cityRef.current?.focus()}
+                                inputMode="text"
+                                value={watch('state')}
+                                error={errors.state}
+                            />
+                            <CustomTextInput
+                                ref={cityRef}
+                                placeholder="City"
                                 returnKeyType="done"
                                 keyboardType="default"
-                                onChangeText={(text) => setValue('zipCode', text, { shouldValidate: true })}
+                                onChangeText={(text) => setValue('city', text, { shouldValidate: true })}
                                 onSubmitEditing={handleSubmit(onSubmit)}
+                                inputMode="text"
+                                value={watch('city')}
+                                error={errors.city}
+                            />
+                                                        <CustomTextInput
+                                ref={zipRef}
+                                placeholder="Zip Code"
+                                returnKeyType="next"
+                                keyboardType="default"
+                                onChangeText={(text) => setValue('zipCode', text, { shouldValidate: true })}
+                                onSubmitEditing={() => {}}
                                 inputMode="text"
                                 value={watch('zipCode')}
                                 error={errors.zipCode}
                             />
-                            <CustomDatePicker
-                                placeholder="Date of Birth"
-                                value={watch('dateOfBirth')}
-                                onChange={(date) => setValue('dateOfBirth', date, { shouldValidate: true })}
-                                error={errors.dateOfBirth}
-                            />
-                            <CustomSelect
-                                items={countryList}
-                                value={selectedCountry}
-                                onValueChange={(value) => {
-                                    setSelectedCountry(value);
-                                    setValue('country', value, { shouldValidate: true }); // ✅ already correct
-                                }}
-                                placeholder="Select Country"
-                                error={errors.country}
-                            />
 
-                            <CustomSelect
-                                items={stateList}
-                                value={selectedState}
-                                onValueChange={(value) => {
-                                    setSelectedState(value);
-                                    setValue('state', value, { shouldValidate: true }); // ✅ add this line
-                                }}
-                                placeholder="Select State"
-                                error={errors.state}
-                                disabled={!selectedCountry}
-                            />
-
-                            <CustomSelect
-                                items={cityList}
-                                value={selectedCity}
-                                onValueChange={(value) => {
-                                    setSelectedCity(value);
-                                    setValue('city', value, { shouldValidate: true }); // ✅ add this line
-                                }}
-                                placeholder="Select City"
-                                error={errors.city}
-                                disabled={!selectedState}
-                            />
                         </View>
 
                         <CustomButton
