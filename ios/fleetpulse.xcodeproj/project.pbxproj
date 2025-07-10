@@ -9,9 +9,11 @@
 /* Begin PBXBuildFile section */
 		107E03ADB43FEB3F98A4AD2E /* libPods-fleetpulse.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 07C68D773E833176DF82BD9A /* libPods-fleetpulse.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		388D3BD9A351493E92AF249F /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66FB55842CB94A75A072DD12 /* BootSplash.storyboard */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		784C428EE238386E076E11B0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		AE1E829773F2458A9EB6A381 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 47B91BBAE1484735A947F912 /* Colors.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +22,8 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = fleetpulse/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = fleetpulse/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = fleetpulse/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		47B91BBAE1484735A947F912 /* Colors.xcassets */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = fleetpulse/Colors.xcassets; sourceTree = "<group>"; };
+		66FB55842CB94A75A072DD12 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = fleetpulse/BootSplash.storyboard; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = fleetpulse/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = fleetpulse/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A4C831BEBA2574DDEF5FB8EC /* Pods-fleetpulse.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fleetpulse.debug.xcconfig"; path = "Target Support Files/Pods-fleetpulse/Pods-fleetpulse.debug.xcconfig"; sourceTree = "<group>"; };
@@ -47,6 +51,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
+				66FB55842CB94A75A072DD12 /* BootSplash.storyboard */,
+				47B91BBAE1484735A947F912 /* Colors.xcassets */,
 			);
 			name = fleetpulse;
 			sourceTree = "<group>";
@@ -161,6 +167,8 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				784C428EE238386E076E11B0 /* PrivacyInfo.xcprivacy in Resources */,
+				388D3BD9A351493E92AF249F /* BootSplash.storyboard in Resources */,
+				AE1E829773F2458A9EB6A381 /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

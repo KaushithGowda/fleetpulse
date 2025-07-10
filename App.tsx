@@ -1,3 +1,4 @@
+import RNBootSplash from 'react-native-bootsplash';
 import { NavigationContainer } from '@react-navigation/native';
 import './global.css';
 import AppNavigator from './src/navigation/AppNavigator';
@@ -16,7 +17,10 @@ function App() {
           barStyle={colorScheme === 'light' ? 'dark-content' : 'light-content'}
           translucent
         />
-        <NavigationContainer ref={navigationRef}>
+        <NavigationContainer
+          ref={navigationRef}
+          onReady={() => RNBootSplash.hide({ fade: true })}
+        >
           <AppNavigator />
         </NavigationContainer>
       </Provider>
