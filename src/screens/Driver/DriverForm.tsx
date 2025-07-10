@@ -242,25 +242,25 @@ const DriverForm = () => {
                                 value={watch('city')}
                                 error={errors.city}
                             />
-                                                        <CustomTextInput
+                            <CustomTextInput
                                 ref={zipRef}
                                 placeholder="Zip Code"
                                 returnKeyType="next"
                                 keyboardType="default"
                                 onChangeText={(text) => setValue('zipCode', text, { shouldValidate: true })}
-                                onSubmitEditing={() => {}}
+                                onSubmitEditing={() => { }}
                                 inputMode="text"
                                 value={watch('zipCode')}
                                 error={errors.zipCode}
                             />
-
                         </View>
 
                         <CustomButton
-                            title="Submit"
+                            title={isSubmitting ? 'Submitting...' : 'Submit'}
                             onPress={handleSubmit(onSubmit)}
                             isLoading={isSubmitting}
                             disabled={isSubmitting}
+                            className='mt-2'
                         />
                     </View>
                 </ScrollView>

@@ -1,4 +1,20 @@
 export const COLORS = {
-  backgroundGray800: '#1f2734', // Tailwind's bg-gray-800
-  textGray900: '#151b26',       // Tailwind's text-gray-900
+  backgroundSlate800: '#1f2737',    // Tailwind's bg-slate-800
+  textSlate800: '#1f2737',          // Tailwind's text-slate-800
+  backgroundSlate700: '#2c3442',    // Tailwind's bg-slate-700
+  textSlate700: '#2c3442',          // Tailwind's text-slate-700
+  backgroundSlate900: '#151b29',    // Tailwind's bg-slate-900
+  textSlate900: '#151b29',          // Tailwind's text-gray-900
+  backgroundGray300: '#e1e7f0',     // Tailwind's bg-gray-300
+  textGray300: '#e1e7f0',           // Tailwind's text-gray-300
+  backgroundGray200: '#b0bcd1',     // Tailwind's bg-gray-200
+  textGray200: '#b0bcd1',           // Tailwind's text-gray-200
+  backgroundGray100: '#f8fafc',     // Tailwind's bg-gray-100
+  textGray100: '#f8fafc',           // Tailwind's text-gray-100
+  backgroundBlue500: '#9EB4DC',     // Tailwind's bg-blue-500
+  textBlue500: '#9EB4DC',           // Tailwind's text-blue-500
+  backgroundGreen500: '#79B3A3',    // Tailwind's bg-green-500
+  textGreen500: '#79B3A3',          // Tailwind's text-green-500
+  backgroundRed600: '#c8652b',      // Tailwind's text-red-500
+  textRed600: '#c8652b',            // Tailwind's text-red-500
 }

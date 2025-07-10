@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import React, { useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -7,6 +8,10 @@ import DriverList from '@/src/screens/Driver/DriverList';
 import Home from '@/src/screens/Home';
 import Settings from '@/src/screens/Settings';
 import { useColorScheme } from 'nativewind';
+import { CustomButton } from '../components/FormElements/CustomButton';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { COLORS } from '../constants/colors';
 
 const Tab = createBottomTabNavigator();
 
@@ -70,27 +75,30 @@ function getTabBarIcon(routeName: string) {
 
 export default function BottomTabs() {
   const { colorScheme } = useColorScheme();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>()
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: getTabBarIcon(route.name),
-        tabBarActiveTintColor: colorScheme === 'dark' ? 'white' : 'black',
+        tabBarActiveTintColor: colorScheme === 'dark' ? COLORS.textGray100 : COLORS.backgroundSlate900,
         tabBarInactiveTintColor: 'gray',
         tabBarShowLabel: false,
         headerShown: true,
         headerTitleAlign: 'left',
+        headerRightContainerStyle: { paddingRight: 18 },
         headerTitleStyle: {
           fontWeight: 'bold',
           fontSize: 24,
-          color: colorScheme === 'dark' ? 'white' : 'black',
+          color: colorScheme === 'dark' ? COLORS.textGray100 : COLORS.backgroundSlate900,
         },
         headerStyle: {
-          backgroundColor: colorScheme === 'dark' ? 'black' : 'white',
+          backgroundColor: colorScheme === 'light' ? COLORS.backgroundGray300 : COLORS.backgroundSlate800,
           shadowOpacity: 0,
         },
         tabBarStyle: {
-          backgroundColor: colorScheme === 'dark' ? '#000' : '#f2f2f2',
+          backgroundColor: colorScheme === 'light' ? COLORS.backgroundGray300 : COLORS.backgroundSlate800,
+          borderTopColor: colorScheme === 'light' ? COLORS.textGray200 : COLORS.backgroundSlate800,
           position: 'absolute',
           height: 70,
           paddingTop: 5,
@@ -103,9 +111,25 @@ export default function BottomTabs() {
         tabBarPosition: 'bottom',
       })}
     >
-      <Tab.Screen name="Home" component={Home}/>
-      <Tab.Screen name="Companies" component={CompanyList} />
-      <Tab.Screen name="Drivers" component={DriverList} />
+      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Companies" component={CompanyList} options={{
+        headerRight: () => (
+          <CustomButton
+            onPress={() => navigation.navigate('CompanyForm')}
+            rightIconName="plus"
+            className='bg-green-500 px-3'
+          />
+        ),
+      }} />
+      <Tab.Screen name="Drivers" component={DriverList} options={{
+        headerRight: () => (
+          <CustomButton
+            onPress={() => navigation.navigate('DriverForm')}
+            rightIconName="plus"
+            className='bg-blue-500 px-3'
+          />
+        ),
+      }} />
       <Tab.Screen name="Settings" component={Settings} />
     </Tab.Navigator>
   );

@@ -1,15 +1,19 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { useMemo, useState, useEffect } from 'react';
 import {
     View,
     Text,
-    TextInput,
     ScrollView,
     TouchableOpacity,
+    StyleSheet,
 } from 'react-native';
+
 import { DataTable, Menu } from 'react-native-paper';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useColorScheme } from 'nativewind';
+
+import { COLORS } from '@/src/constants/colors';
+import { CustomTextInput } from './FormElements/CustomTextInput';
+import { colorScheme, useColorScheme } from 'nativewind';
 
 type ColumnConfig<T> = {
     key: keyof T;
@@ -76,19 +80,27 @@ export function EntityTable<T extends { id: string }>({
 
     return (
         <View className={className}>
-            <TextInput
+            <CustomTextInput
                 placeholder={filterPlaceholder}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                className="mt-3 mb-5 py-4 px-2 border bg-white dark:bg-gray-900 border-gray-200 rounded-xl text-black dark:text-white dark:border-gray-600"
-                placeholderTextColor="#9CA3AF"
+                inputMode='text'
+                returnKeyType='search'
+                disabled={false}
+                className='my-5'
+                error={{}}
             />
             <ScrollView>
                 <ScrollView horizontal>
-                    <DataTable style={{ backgroundColor: colorScheme === 'light' ? '#fff' : '#4A4A58', marginBottom: 200, borderRadius: 10 }}>
+                    <DataTable style={[
+                        styles.DataTable,
+                        {
+                            backgroundColor: colorScheme === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700
+                        }
+                    ]}>
                         <DataTable.Header>
-                            <DataTable.Title style={{ minWidth: 60 }}>
-                                <Text className="text-sm font-semibold text-gray-800 dark:text-white">Icon</Text>
+                            <DataTable.Title style={styles.DataTitle}>
+                                <Text className="text-sm font-semibold text-slate-900 dark:text-gray-100">Icon</Text>
                             </DataTable.Title>
                             {columns.map(col => (
                                 <DataTable.Title
@@ -105,7 +117,7 @@ export function EntityTable<T extends { id: string }>({
                                     }}
                                 >
                                     <View className="flex-row items-center gap-1">
-                                        <Text className="text-sm font-semibold text-gray-800 dark:text-white">
+                                        <Text className="text-sm font-semibold text-slate-900 dark:text-gray-100">
                                             {col.title}
                                         </Text>
                                         {col.sortable && (
@@ -118,7 +130,7 @@ export function EntityTable<T extends { id: string }>({
                                                         : 'arrow-up-down'
                                                 }
                                                 size={12}
-                                                color={screenType === 'company' ? '#79B3A3' : '#9EB4DC'}
+                                                color={screenType === 'company' ? COLORS.textBlue500 : COLORS.textGreen500}
                                             />
                                         )}
                                     </View>
@@ -129,8 +141,8 @@ export function EntityTable<T extends { id: string }>({
                         {sortedData.slice(from, to).map(row => (
                             <TouchableOpacity key={row.id} onPress={() => onRowPress?.(row)}>
                                 <DataTable.Row>
-                                    <DataTable.Cell style={{ minWidth: 60, paddingVertical: 8 }}>
-                                        <View className={`w-8 h-8 flex rounded-full justify-center items-center" ${screenType === 'company' ? "bg-green-600 dark:bg-green-500" : "bg-blue-600 dark:bg-blue-500"}`}>
+                                    <DataTable.Cell style={styles.DataCell}>
+                                        <View className={`w-8 h-8 flex rounded-full justify-center items-center" ${screenType === 'company' ? "bg-green-500" : "bg-blue-500"}`}>
                                             <Text className="text-white font-bold text-lg text-center">
                                                 {String(row[columns[0].key]).charAt(0)}
                                             </Text>
@@ -139,12 +151,9 @@ export function EntityTable<T extends { id: string }>({
                                     {columns.map(col => (
                                         <DataTable.Cell key={String(col.key)} style={{ minWidth: col.width || 150 }}>
                                             <Text
-                                                className="text-sm"
+                                                className="text-sm text-slate-900 dark:text-gray-100"
                                                 numberOfLines={1}
                                                 ellipsizeMode="tail"
-                                                style={{
-                                                    color: colorScheme === 'light' ? '#504f58' : '#ffffff',
-                                                }}
                                             >
                                                 {String(row[col.key]).length > 15
                                                     ? String(row[col.key]).slice(0, 15) + '…'
@@ -159,23 +168,22 @@ export function EntityTable<T extends { id: string }>({
                 </ScrollView>
             </ScrollView>
 
-            {/* Footer Pagination + Menu */}
-            <View className='w-screen absolute bottom-10 pb-12 bg-gray-100 dark:bg-black z-10' >
-                <View className="flex-row items-center justify-end px-10 py-2">
-                    <Text className="text-sm text-gray-700 dark:text-gray-300">Rows per page</Text>
+            <View className='w-screen absolute -left-4 bottom-10 pb-12 bg-gray-100 border-slate-300 dark:border-slate-700 border-t-2 z-10' style={{ backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300 }}>
+                <View className="flex flex-row items-center justify-end px-10 py-2">
+                    <Text className="text-sm text-slate-900 dark:text-gray-100">Rows per page</Text>
                     <Menu
                         visible={menuVisible}
                         onDismiss={() => setMenuVisible(false)}
                         anchor={
                             <TouchableOpacity
                                 onPress={() => setMenuVisible(prev => !prev)}
-                                className="flex-row items-center ml-2 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md"
+                                className="flex flex-row items-center ml-2 px-2 py-1 border border-gray-300 dark:border-slate-700 rounded-md"
                             >
-                                <Text className="text-sm text-gray-800 dark:text-white mr-1">{itemsPerPage}</Text>
+                                <Text className="text-sm text-slate-900 dark:text-gray-100 mr-1">{itemsPerPage}</Text>
                                 <MaterialCommunityIcons
                                     name={menuVisible ? 'chevron-up' : 'chevron-down'}
                                     size={18}
-                                    color={screenType === 'company' ? '#79B3A3' : '#9EB4DC'}
+                                    color={screenType === 'company' ? COLORS.textBlue500 : COLORS.textGreen500}
                                 />
                             </TouchableOpacity>
                         }
@@ -188,8 +196,8 @@ export function EntityTable<T extends { id: string }>({
                                     setMenuVisible(false);
                                 }}
                                 title={`${n}`}
-                                titleStyle={{ fontSize: 14 }}
-                                rippleColor={screenType === 'company' ? '#79B3A3' : '#9EB4DC'}
+                                titleStyle={styles.MenuTitle}
+                                rippleColor={screenType === 'company' ? COLORS.textBlue500 : COLORS.textGreen500}
                             />
                         ))}
                     </Menu>
@@ -207,3 +215,20 @@ export function EntityTable<T extends { id: string }>({
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    DataTable: {
+        marginBottom: 200,
+        borderRadius: 10
+    },
+    DataTitle: {
+        minWidth: 60
+    },
+    DataCell: {
+        minWidth: 60,
+        paddingVertical: 8
+    },
+    MenuTitle: {
+        fontSize: 14
+    }
+})

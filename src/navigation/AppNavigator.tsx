@@ -4,6 +4,7 @@ import AuthStack from './AuthStack';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import DriverForm from '@/src/screens/Driver/DriverForm';
+import CompanyForm from '@/src/screens/Company/CompanyForm';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,7 +17,9 @@ export default function AppNavigator() {
   }
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Navigator screenOptions={{
+      headerShown: false
+    }}>
       <Stack.Screen
         name="Main"
         component={BottomTabs}
@@ -25,6 +28,11 @@ export default function AppNavigator() {
       <Stack.Screen
         name="DriverForm"
         component={DriverForm}
+        options={{ headerBackTitle: 'Back', headerTitle: '' }}
+      />
+      <Stack.Screen
+        name="CompanyForm"
+        component={CompanyForm}
         options={{ headerBackTitle: 'Back', headerTitle: '' }}
       />
     </Stack.Navigator>

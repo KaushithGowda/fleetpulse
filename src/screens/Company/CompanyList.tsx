@@ -10,10 +10,14 @@ import { fakeCompanies } from '@/src/data/fakeStats';
 import { CompanyType } from '@/src/types/company';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { BottomSheetCompany } from '@/src/components/Company/BottomSheetCompany';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { CustomButton } from '@/src/components/FormElements/CustomButton';
 
 const numberOfItemsPerPageList = [5, 10, 50];
 
 const CompanyList = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<any>>()
   const { colorScheme } = useColorScheme();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -121,6 +125,10 @@ const CompanyList = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View className="flex-1 p-4 bg-white dark:bg-black">
+        <CustomButton
+          onPress={() => navigation.navigate('CompanyForm')}
+          title='Add Company'
+        />
         <TextInput
           className="mb-4 p-2 border rounded text-black dark:text-white dark:border-gray-600"
           placeholder="Search companies..."

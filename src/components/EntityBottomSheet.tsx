@@ -1,12 +1,15 @@
-/* eslint-disable react-native/no-inline-styles */
+import React, { ReactNode, useCallback } from "react";
+import { StyleSheet, View } from "react-native";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
+
+import { colorScheme } from 'nativewind';
+
+import { COLORS } from '@/src/constants/colors';
+
 import { BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
-import React, { ReactNode, useCallback } from "react";
-import { useColorScheme } from 'nativewind';
-import { View } from "react-native";
 
 type EntityBottomSheetProps = {
   bottomSheetRef: any;
@@ -14,8 +17,6 @@ type EntityBottomSheetProps = {
 };
 
 export const EntityBottomSheet = ({ bottomSheetRef, children }: EntityBottomSheetProps) => {
-  const { colorScheme } = useColorScheme();
-
   const renderBackdrop = useCallback(
     (props: React.JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
       <BottomSheetBackdrop
@@ -34,23 +35,32 @@ export const EntityBottomSheet = ({ bottomSheetRef, children }: EntityBottomShee
       index={-1}
       snapPoints={['50%', '70%', '100%']}
       backdropComponent={renderBackdrop}
-      handleStyle={{
-        backgroundColor: colorScheme === 'light' ? '#f5f5f5' : '#000',
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
-      }}
-      handleIndicatorStyle={{
-        backgroundColor: colorScheme === 'light' ? '#000' : '#fff'
-      }}
+      handleStyle={styles.handleStyle}
+      handleIndicatorStyle={styles.handleIndicatorStyle}
     >
       <BottomSheetScrollView
         className="bg-gray-100 dark:bg-black"
-        contentContainerStyle={{ paddingHorizontal: 20 }}
+        contentContainerStyle={styles.containerStyle}
       >
-        <View className="bg-gray-100 dark:bg-black pb-28">
+        <View className="bg-gray-100 dark:bg-black pb-32">
           {children}
         </View>
       </BottomSheetScrollView>
     </BottomSheet>
   );
 };
+
+const styles = StyleSheet.create({
+  containerStyle: {
+    paddingHorizontal: 20,
+    paddingBottom: 100
+  },
+  handleIndicatorStyle: {
+    backgroundColor: colorScheme ? COLORS.textGray100 : COLORS.textSlate900
+  },
+  handleStyle: {
+    backgroundColor: colorScheme ? '#000' : '#fff',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  }
+})

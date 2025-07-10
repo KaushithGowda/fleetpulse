@@ -5,8 +5,13 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { BarChart } from 'react-native-gifted-charts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'nativewind';
+import { COLORS } from '@/src/constants/colors';
+import { CustomButton } from '@/src/components/FormElements/CustomButton';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const Home = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<any>>()
   const insets = useSafeAreaInsets();
   const [selectedView, setSelectedView] = useState<'companies' | 'drivers'>(
     'companies',
@@ -136,7 +141,9 @@ const Home = () => {
   ];
 
   return (
-    <ScrollView className="flex-1 px-4 pt-5 pb-10 bg-gray-100 dark:bg-black">
+    <ScrollView className="flex-1 px-4 pt-5 pb-10 bg-gray-100 dark:bg-black" style={{
+      backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300
+    }}>
       <View style={{ paddingBottom: insets.bottom + 100 }}>
         {hasData ? (
           <View className="flex-1 justify-center items-center space-y-4">
@@ -153,28 +160,32 @@ const Home = () => {
         ) : (
           <>
             <View className="mb-4">
-              <Text className="text-lg font-semibold text-gray-800 dark:text-white my-10 text-center">
+              <Text className="text-lg font-semibold text-slate-900 dark:text-gray-100 my-10 text-center">
                 🚀 Keep expanding your fleet!
               </Text>
               <View className="flex-row justify-center gap-x-4 mb-5">
-                <TouchableOpacity className="bg-green-500 gap-x-2 items-center justify-center flex-row p-3 rounded-full shadow-md">
-                  <Text className="text-white font-bold">Add Company</Text>
-                  <Icon name="building-o" size={20} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity className="bg-blue-500 gap-x-2 items-center justify-center flex-row  p-3 rounded-full shadow-md">
-                  <Text className="text-white font-bold">Add Driver</Text>
-                  <Icon name="truck" size={20} color="#fff" />
-                </TouchableOpacity>
+                <CustomButton
+                  onPress={() => navigation.navigate('CompanyForm')}
+                  title='Add Company'
+                  className='bg-green-500 rounded-full'
+                  rightIconName='office-building-outline'
+                />
+                <CustomButton
+                  onPress={() => navigation.navigate('DriverForm')}
+                  title='Add Company'
+                  className='bg-blue-500 rounded-full'
+                  rightIconName='truck'
+                />
               </View>
               {recentActivity.length > 0 && (
-                <View className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800 space-y-2 mt-2">
-                  <Text className="text-sm text-gray-800 dark:text-gray-200 font-medium">
+                <View className="p-4 rounded-xl mt-2" style={{ backgroundColor: colorScheme === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700 }}>
+                  <Text className="text-sm text-slate-800 dark:text-gray-100 font-semibold">
                     Recent Activity
                   </Text>
                   {recentActivity.map((item, index) => (
                     <Text
                       key={index}
-                      className="text-sm text-gray-600 dark:text-gray-400"
+                      className="text-sm text-slate-500 dark:text-slate-400"
                     >
                       {item}
                     </Text>
@@ -183,33 +194,33 @@ const Home = () => {
               )}
             </View>
 
-            <View className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800 mb-4">
+            <View style={{
+              backgroundColor: colorScheme === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700
+            }} className="p-4 rounded-xl mb-4">
               <View className="flex-row justify-between items-center mb-4">
                 <View className="flex-row space-x-2">
                   <TouchableOpacity
                     onPress={() => setSelectedView('companies')}
-                    className={`px-3 py-1 rounded ${
-                      selectedView === 'companies'
-                        ? 'bg-green-500'
-                        : 'bg-gray-200 dark:bg-gray-700'
-                    }`}
+                    className={`px-3 py-1 rounded ${selectedView === 'companies'
+                      ? 'bg-green-500'
+                      : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
                   >
                     <Text
-                      className={`${selectedView === 'companies' ? 'text-white' : 'text-gray-800 dark:text-white'}`}
+                      className={`${selectedView === 'companies' ? 'text-gray-100' : 'text-slate-900 dark:text-gray-100'}`}
                     >
                       Companies
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => setSelectedView('drivers')}
-                    className={`px-3 py-1 rounded ${
-                      selectedView === 'drivers'
-                        ? 'bg-blue-500'
-                        : 'bg-gray-200 dark:bg-gray-700'
-                    }`}
+                    className={`px-3 py-1 rounded ${selectedView === 'drivers'
+                      ? 'bg-blue-500'
+                      : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
                   >
                     <Text
-                      className={`${selectedView === 'drivers' ? 'text-white' : 'text-gray-800 dark:text-white'}`}
+                      className={`${selectedView === 'drivers' ? 'text-gray-100' : 'text-slate-900 dark:text-gray-100'}`}
                     >
                       Drivers
                     </Text>
@@ -218,48 +229,45 @@ const Home = () => {
                 <View className="flex-row space-x-2">
                   <TouchableOpacity
                     onPress={() => setSelectedRange('week')}
-                    className={`px-3 py-1 rounded ${
-                      selectedRange === 'week'
-                        ? selectedView === 'drivers'
-                          ? 'bg-blue-500'
-                          : 'bg-green-500'
-                        : 'bg-gray-200 dark:bg-gray-700'
-                    }`}
+                    className={`px-3 py-1 rounded ${selectedRange === 'week'
+                      ? selectedView === 'drivers'
+                        ? 'bg-blue-500'
+                        : 'bg-green-500'
+                      : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
                   >
                     <Text
-                      className={`${selectedRange === 'week' ? 'text-white' : 'text-gray-800 dark:text-white'}`}
+                      className={`${selectedRange === 'week' ? 'text-gray-100' : 'text-slate-900 dark:text-gray-100'}`}
                     >
                       Week
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => setSelectedRange('month')}
-                    className={`px-3 py-1 rounded ${
-                      selectedRange === 'month'
-                        ? selectedView === 'drivers'
-                          ? 'bg-blue-500'
-                          : 'bg-green-500'
-                        : 'bg-gray-200 dark:bg-gray-700'
-                    }`}
+                    className={`px-3 py-1 rounded ${selectedRange === 'month'
+                      ? selectedView === 'drivers'
+                        ? 'bg-blue-500'
+                        : 'bg-green-500'
+                      : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
                   >
                     <Text
-                      className={`${selectedRange === 'month' ? 'text-white' : 'text-gray-800 dark:text-white'}`}
+                      className={`${selectedRange === 'month' ? 'text-gray-100' : 'text-slate-900 dark:text-gray-100'}`}
                     >
                       Month
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => setSelectedRange('year')}
-                    className={`px-3 py-1 rounded ${
-                      selectedRange === 'year'
-                        ? selectedView === 'drivers'
-                          ? 'bg-blue-500'
-                          : 'bg-green-500'
-                        : 'bg-gray-200 dark:bg-gray-700'
-                    }`}
+                    className={`px-3 py-1 rounded ${selectedRange === 'year'
+                      ? selectedView === 'drivers'
+                        ? 'bg-blue-500'
+                        : 'bg-green-500'
+                      : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
                   >
                     <Text
-                      className={`${selectedRange === 'year' ? 'text-white' : 'text-gray-800 dark:text-white'}`}
+                      className={`${selectedRange === 'year' ? 'text-gray-100' : 'text-slate-900 dark:text-gray-100'}`}
                     >
                       Year
                     </Text>
@@ -302,24 +310,11 @@ const Home = () => {
               </View>
             </View>
 
-            <View className="bg-white dark:bg-gray-900 rounded-xl border border-gray-50 dark:border-gray-900 overflow-hidden mb-6">
-              <TouchableOpacity className="flex-row justify-between items-center px-4 py-5 border-b border-gray-200 dark:border-gray-700">
-                <Text className="text-base font-semibold text-gray-800 dark:text-white">
-                  Total Drivers
-                </Text>
-                <View className="flex-row items-center gap-x-2">
-                  <Text className="bg-blue-500 text-white font-semibold text-base rounded-md px-2">
-                    {displayDrivers}
-                  </Text>
-                  <Icon
-                    name="chevron-right"
-                    size={16}
-                    color={colorScheme === 'dark' ? 'white' : 'gray'}
-                  />
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity className="flex-row justify-between items-center px-4 py-5">
-                <Text className="text-base font-semibold text-gray-800 dark:text-white">
+            <View className="rounded-xl mb-6" style={{
+              backgroundColor: colorScheme === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700
+            }}>
+              <TouchableOpacity onPress={() => navigation.navigate('CompanyList')} className="flex-row justify-between items-center px-4 py-5">
+                <Text className="text-base font-semibold text-slate-900 dark:text-gray-100">
                   Total Companies
                 </Text>
                 <View className="flex-row items-center gap-x-2">
@@ -329,7 +324,22 @@ const Home = () => {
                   <Icon
                     name="chevron-right"
                     size={16}
-                    color={colorScheme === 'dark' ? 'white' : 'gray'}
+                    color={colorScheme === 'dark' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('DriverList')} className="flex-row justify-between items-center px-4 py-5 border-b-2 border-slate-200 dark:border-slate-700">
+                <Text className="text-base font-semibold text-slate-900 dark:text-gray-100">
+                  Total Drivers
+                </Text>
+                <View className="flex-row items-center gap-x-2">
+                  <Text className="bg-blue-500 text-white font-semibold text-base rounded-md px-2">
+                    {displayDrivers}
+                  </Text>
+                  <Icon
+                    name="chevron-right"
+                    size={16}
+                    color={colorScheme === 'dark' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700}
                   />
                 </View>
               </TouchableOpacity>

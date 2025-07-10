@@ -2,6 +2,8 @@ import React, { forwardRef } from 'react';
 import { TextInput, TextInputProps, Text, TouchableOpacity } from 'react-native';
 import { FieldError } from 'react-hook-form';
 import { View } from 'react-native';
+import { colorScheme } from 'nativewind';
+import { COLORS } from '@/src/constants/colors';
 
 type CustomTextInputProps = {
     className?: string;
@@ -42,12 +44,13 @@ export const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
                 <TextInput
                     ref={ref}
                     placeholder={placeholder}
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor={colorScheme.get() === 'light' ? COLORS.textSlate900 : COLORS.textGray100}
                     returnKeyType={returnKeyType}
                     keyboardType={keyboardType}
                     onChangeText={onChangeText}
                     onSubmitEditing={onSubmitEditing}
-                    className={`bg-white dark:bg-gray-800 text-gray-900 dark:text-white h-14 rounded-lg px-4 text-base ${disabled ? 'opacity-50' : ''} ${className}`}
+                    style={{ backgroundColor: colorScheme.get() === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700}}
+                    className={`text-slate-900 dark:text-gray-100 h-14 rounded-lg px-4 text-base ${disabled ? 'opacity-50' : ''} ${className}`}
                     onBlur={onBlur}
                     autoCapitalize={autoCapitalize}
                     secureTextEntry={isSecureEntry}

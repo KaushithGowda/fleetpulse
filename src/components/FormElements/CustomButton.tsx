@@ -1,14 +1,16 @@
 import { useColorScheme } from 'nativewind';
 import React from 'react';
-import { TouchableOpacity, Text, ActivityIndicator, TouchableOpacityProps } from 'react-native';
+import { TouchableOpacity, Text, ActivityIndicator, TouchableOpacityProps, View } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type CustomButtonProps = {
-    title: string;
+    title?: string;
     onPress: () => void;
     isLoading?: boolean;
     disabled?: boolean;
     className?: string;
     textClassName?: string;
+    rightIconName?: string;
 } & TouchableOpacityProps;
 
 export const CustomButton: React.FC<CustomButtonProps> = ({
@@ -18,6 +20,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
     disabled = false,
     className = '',
     textClassName = '',
+    rightIconName,
     ...rest
 }) => {
     const { colorScheme } = useColorScheme();
@@ -26,13 +29,23 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
             onPress={onPress}
             disabled={disabled || isLoading}
             activeOpacity={0.8}
-            className={`h-12 bg-gray-900 dark:bg-white rounded-lg justify-center items-center mt-4 ${disabled || isLoading ? 'opacity-60' : ''} ${className}`}
+            className={`h-12 rounded-lg justify-center items-center px-2 ${disabled || isLoading ? 'opacity-60' : ''} ${className}`}
             {...rest}
         >
             {isLoading ? (
                 <ActivityIndicator color={colorScheme === 'dark' ? '#000' : '#fff'} />
             ) : (
-                <Text className={`text-white dark:text-gray-900 font-bold ${textClassName}`}>{title}</Text>
+                <View className="flex-row items-center gap-x-2">
+                    {
+                        title &&
+                        <Text className={`text-white font-bold ${textClassName}`}>
+                            {title}
+                        </Text>
+                    }
+                    {rightIconName && (
+                        <MaterialCommunityIcons name={rightIconName} size={18} color={'#fff'} />
+                    )}
+                </View>
             )}
         </TouchableOpacity>
     );
