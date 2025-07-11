@@ -65,6 +65,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.5.14",
     "react-native-asset": "^2.1.1",
+    "react-native-make": "^1.0.1",
     "react-test-renderer": "19.1.0",
     "typescript": "5.0.4"
   },

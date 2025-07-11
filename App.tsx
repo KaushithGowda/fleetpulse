@@ -7,9 +7,29 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
 import { useColorScheme } from 'nativewind';
 import { Provider } from './src/providers';
+import { useEffect } from 'react';
 
 function App() {
   const { colorScheme } = useColorScheme();
+  useEffect(() => {
+    const prepare = async () => {
+      try {
+        // ⏳ Call your async APIs here
+        // await Promise.all([
+        //   fetchDrivers(),
+        //   fetchCompanies(),
+        //   fetchUserSettings(),
+        // ]);
+        setTimeout(()=>{},5000)
+      } catch (e) {
+        console.warn('Error during splash API calls', e);
+      } finally {
+        RNBootSplash.hide({ fade: true });
+      }
+    };
+
+    prepare();
+  }, []);
   return (
     <SafeAreaProvider>
       <Provider>

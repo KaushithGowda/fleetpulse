@@ -12,7 +12,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 const PieCenterLabel = ({ totalCompanies, totalDrivers }: { totalCompanies: number; totalDrivers: number }) => {
   const { colorScheme } = useColorScheme();
   return (
-    <View className='flex-1 pb-4 justify-end items-center'>
+    <View className='flex-1 pb-5 justify-end items-center'>
       <Text className={`text-xs font-bold ${colorScheme === 'dark' ? 'text-white' : 'text-black'}`}>
         {(totalCompanies + totalDrivers === 0) ? 0 : Math.round((totalCompanies / (totalCompanies + totalDrivers)) * 100)}%
       </Text>
@@ -328,8 +328,10 @@ const Home = () => {
                   showGradient
                   sectionAutoFocus
                   isThreeD
-                  radius={100}
-                  innerRadius={60}
+                  showText
+                  textColor="black"
+                  radius={120}
+                  innerRadius={50}
                   innerCircleColor={colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray200}
                   centerLabelComponent={() => <PieCenterLabel totalCompanies={totalCompanies} totalDrivers={totalDrivers} />}
                 />
