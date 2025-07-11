@@ -6,7 +6,8 @@ import { COLORS } from '@/src/constants/colors';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { DriverType } from '@/src/types/driver';
 
-import { View, Text } from 'react-native';
+import { View, Text, Alert, Share, TouchableOpacity } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { CustomButton } from '@/src/components/FormElements/CustomButton';
 import { EntityTable } from '@/src/components/EntityTable';
 import { EntityBottomSheet } from '@/src/components/EntityBottomSheet';
@@ -18,10 +19,32 @@ import { fakeDrivers } from '@/src/data/fakeStats';
 import { useColorScheme } from 'nativewind';
 
 const DriverList = () => {
-  const {colorScheme} = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const navigation = useNavigation<NativeStackNavigationProp<any>>()
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selectedDriver, setSelectedDriver] = useState<DriverType | null>(null);
+
+  const ShareDetails = async () => {
+    if (!selectedDriver) return;
+    const message = `
+    Driver: ${selectedDriver.firstName} ${selectedDriver.lastName}
+    DOB: ${selectedDriver.dob}
+    License No: ${selectedDriver.licenseNumber}
+    Experience: ${selectedDriver.experience} yrs
+
+    Contact:
+    Email: ${selectedDriver.email}
+    Mobile: ${selectedDriver.mobile}
+
+    Address:
+    ${selectedDriver.address1}${selectedDriver.address2 ? `, ${selectedDriver.address2}` : ''}
+    ${selectedDriver.city}, ${selectedDriver.state} - ${selectedDriver.zipCode}`.trim();
+    try {
+      await Share.share({ message });
+    } catch (error) {
+      Alert.alert("Sharing failed", "Something went wrong while sharing driver details.");
+    }
+  }
 
   return (
     <View className="flex-1 px-4" style={{ backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300 }}>
@@ -48,15 +71,16 @@ const DriverList = () => {
             { key: 'firstName', title: 'Driver First Name', sortable: true },
             { key: 'lastName', title: 'Driver Last Name', sortable: true },
             { key: 'email', title: 'E-mail', sortable: true },
-            { key: 'mobile', title: 'Mobile#', sortable: true },
+            { key: 'mobile', title: 'Mobile', sortable: true },
             { key: 'dob', title: 'Date of Birth', sortable: true },
-            { key: 'licenseNumber', title: 'License #', sortable: true },
-            { key: 'experience', title: 'Experience (yrs)', sortable: true },
+            { key: 'licenseNumber', title: 'License No', sortable: true },
+            { key: 'experience', title: 'Experience', sortable: true },
             { key: 'address1', title: 'Address 1' },
             { key: 'address2', title: 'Address 2' },
+            { key: 'country', title: 'Country', sortable: true },
             { key: 'city', title: 'City', sortable: true },
             { key: 'state', title: 'State', sortable: true },
-            { key: 'zipCode', title: 'Zip Code', sortable: true },
+            { key: 'zipCode', title: 'Zip', sortable: true },
           ]}
           filterPlaceholder="Search drivers..."
           onRowPress={(driver) => {
@@ -69,14 +93,16 @@ const DriverList = () => {
       <EntityBottomSheet bottomSheetRef={bottomSheetRef}>
         {selectedDriver && (
           <View className="gap-y-2">
-            <View className="flex-row justify-between">
+            <View className="flex-row justify-between mb-3">
               <CustomButton
-                onPress={() => { }}
+                onPress={() => ShareDetails()}
                 rightIconName='share-variant'
+                className='bg-blue-500 px-3'
               />
               <CustomButton
                 onPress={() => navigation.navigate('DriverForm')}
                 rightIconName='square-edit-outline'
+                className='bg-blue-500 px-3'
               />
             </View>
 
@@ -107,20 +133,35 @@ const DriverList = () => {
             <Text className="text-slate-500 dark:text-slate-400 text-sm mb-1 px-1">License & Contact</Text>
             <View className="rounded-xl bg-gray-100 dark:bg-slate-900 p-4 mb-4">
               <View className="flex-row justify-between items-center border-b border-gray-100 dark:border-slate-700 pb-2 mb-2">
-                <Text className="text-slate-500 dark:text-slate-400 text-sm">License #</Text>
-                <Text className="text-slate-900 dark:text-gray-100 text-sm">{selectedDriver.licenseNumber}</Text>
+                <Text className="text-slate-500 dark:text-slate-400 text-sm">License No.</Text>
+                <View className="flex-row items-center gap-x-3">
+                  <Text className="text-slate-900 dark:text-gray-100 text-sm">{selectedDriver.licenseNumber}</Text>
+                  <TouchableOpacity onPress={() => Clipboard.setString(selectedDriver.licenseNumber)}>
+                    <MaterialCommunityIcons name="content-copy" size={20} color="#4B5563" />
+                  </TouchableOpacity>
+                </View>
               </View>
               <View className="flex-row justify-between items-center border-b border-gray-100 dark:border-slate-700 pb-2 mb-2">
-                <Text className="text-slate-500 dark:text-slate-400 text-sm">Experience (yrs)</Text>
+                <Text className="text-slate-500 dark:text-slate-400 text-sm">Experience</Text>
                 <Text className="text-slate-900 dark:text-gray-100 text-sm">{selectedDriver.experience}</Text>
               </View>
               <View className="flex-row justify-between items-center border-b border-gray-100 dark:border-slate-700 pb-2 mb-2">
                 <Text className="text-slate-500 dark:text-slate-400 text-sm">Email</Text>
-                <Text className="text-slate-900 dark:text-gray-100 text-sm">{selectedDriver.email}</Text>
+                <View className="flex-row items-center gap-x-3">
+                  <Text className="text-slate-900 dark:text-gray-100 text-sm">{selectedDriver.email}</Text>
+                  <TouchableOpacity onPress={() => Clipboard.setString(selectedDriver.email)}>
+                    <MaterialCommunityIcons name="content-copy" size={20} color="#4B5563" />
+                  </TouchableOpacity>
+                </View>
               </View>
               <View className="flex-row justify-between items-center">
                 <Text className="text-slate-500 dark:text-slate-400 text-sm">Mobile</Text>
-                <Text className="text-slate-900 dark:text-gray-100 text-sm">{selectedDriver.mobile}</Text>
+                <View className="flex-row items-center gap-x-3">
+                  <Text className="text-slate-900 dark:text-gray-100 text-sm">{selectedDriver.mobile}</Text>
+                  <TouchableOpacity onPress={() => Clipboard.setString(selectedDriver.mobile)}>
+                    <MaterialCommunityIcons name="content-copy" size={20} color="#4B5563" />
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
 

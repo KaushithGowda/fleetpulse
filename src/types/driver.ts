@@ -9,6 +9,7 @@ export type DriverType = {
   experience: number;
   address1: string;
   address2?: string;
+  country: string;
   city: string;
   state: string;
   zipCode: string;

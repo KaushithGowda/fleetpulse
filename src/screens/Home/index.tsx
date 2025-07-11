@@ -1,14 +1,27 @@
 import { fakeStats } from '@/src/data/fakeStats';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { BarChart } from 'react-native-gifted-charts';
+import { BarChart, PieChart } from 'react-native-gifted-charts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'nativewind';
 import { COLORS } from '@/src/constants/colors';
 import { CustomButton } from '@/src/components/FormElements/CustomButton';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+const PieCenterLabel = ({ totalCompanies, totalDrivers }: { totalCompanies: number; totalDrivers: number }) => {
+  const { colorScheme } = useColorScheme();
+  return (
+    <View className='flex-1 pb-4 justify-end items-center'>
+      <Text className={`text-xs font-bold ${colorScheme === 'dark' ? 'text-white' : 'text-black'}`}>
+        {(totalCompanies + totalDrivers === 0) ? 0 : Math.round((totalCompanies / (totalCompanies + totalDrivers)) * 100)}%
+      </Text>
+      <Text className={`text-xs ${colorScheme === 'dark' ? 'text-white' : 'text-black'}`}>
+        {totalDrivers > totalCompanies ? 'Drivers' : 'Companies'}
+      </Text>
+    </View>
+  );
+};
 
 const Home = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any>>()
@@ -22,36 +35,7 @@ const Home = () => {
   const totalCompanies = fakeStats.totalCompanies;
   const totalDrivers = fakeStats.totalDrivers;
   const hasData = totalCompanies === 0 && totalDrivers === 0;
-
-  const [displayCompanies, setDisplayCompanies] = useState(0);
-  const [displayDrivers, setDisplayDrivers] = useState(0);
   const { colorScheme } = useColorScheme();
-
-  useEffect(() => {
-    let comp = 0;
-    let driv = 0;
-
-    const compInterval = setInterval(() => {
-      if (comp < totalCompanies) {
-        setDisplayCompanies(++comp);
-      } else {
-        clearInterval(compInterval);
-      }
-    }, 50);
-
-    const drivInterval = setInterval(() => {
-      if (driv < totalDrivers) {
-        setDisplayDrivers(++driv);
-      } else {
-        clearInterval(drivInterval);
-      }
-    }, 50);
-
-    return () => {
-      clearInterval(compInterval);
-      clearInterval(drivInterval);
-    };
-  }, [totalCompanies, totalDrivers]);
 
   // Helper for generating labels for the chart
   const getLabels = (range: 'week' | 'month' | 'year') => {
@@ -127,12 +111,12 @@ const Home = () => {
   }, [barData]);
 
   const topLabelTextStyle = {
-    color: colorScheme === 'light' ? '#000' : '#f9f9f9',
+    color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100,
     fontWeight: 'bold',
     fontSize: 10,
   };
 
-  const xAxisLabelTextStyle = { fontSize: 10, color: '#888' };
+  const xAxisLabelTextStyle = { fontSize: 10, color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100, };
 
   const recentActivity = [
     '✔️ Added Driver: John Doe',
@@ -140,11 +124,34 @@ const Home = () => {
     '✏️ Updated Company: Roadster Pvt Ltd',
   ];
 
+  const pieData = [
+    {
+      value: totalCompanies,
+      color: '#4ADE80',
+      gradientCenterColor: '#22C55E',
+      focused: true,
+    },
+    {
+      value: totalDrivers,
+      color: '#60A5FA',
+      gradientCenterColor: '#3B82F6',
+    },
+  ];
+
+  const renderDot = (color: string) => (
+    <View
+      className='h-2.5 w-2.5 rounded-full'
+      style={{
+        backgroundColor: color,
+      }}
+    />
+  );
+
   return (
-    <ScrollView className="flex-1 px-4 pt-5 pb-10 bg-gray-100 dark:bg-black" style={{
-      backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300
+    <ScrollView className={`flex-1 px-4 pt-5`} style={{
+      backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300,
     }}>
-      <View style={{ paddingBottom: insets.bottom + 100 }}>
+      <View className={`flex-1`} style={{ paddingBottom: insets.bottom + 100 }}>
         {hasData ? (
           <View className="flex-1 justify-center items-center space-y-4">
             <Text className="text-lg font-bold text-gray-800 dark:text-white">
@@ -178,7 +185,7 @@ const Home = () => {
                 />
               </View>
               {recentActivity.length > 0 && (
-                <View className="p-4 rounded-xl mt-2" style={{ backgroundColor: colorScheme === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700 }}>
+                <View className={`p-4 rounded-xl mt-2 ${colorScheme === 'light' ? 'bg-gray-100' : 'bg-slate-700'}`}>
                   <Text className="text-sm text-slate-800 dark:text-gray-100 font-semibold">
                     Recent Activity
                   </Text>
@@ -194,14 +201,12 @@ const Home = () => {
               )}
             </View>
 
-            <View style={{
-              backgroundColor: colorScheme === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700
-            }} className="p-4 rounded-xl mb-4">
+            <View className={`${colorScheme === 'light' ? 'bg-gray-100' : 'bg-slate-700'} p-4 rounded-xl mb-4`}>
               <View className="flex-row justify-between items-center mb-4">
-                <View className="flex-row space-x-2">
+                <View className="flex-row">
                   <TouchableOpacity
                     onPress={() => setSelectedView('companies')}
-                    className={`px-3 py-1 rounded ${selectedView === 'companies'
+                    className={`px-3 py-1 rounded-l ${selectedView === 'companies'
                       ? 'bg-green-500'
                       : 'bg-gray-200 dark:bg-gray-700'
                       }`}
@@ -214,7 +219,7 @@ const Home = () => {
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => setSelectedView('drivers')}
-                    className={`px-3 py-1 rounded ${selectedView === 'drivers'
+                    className={`px-3 py-1 rounded-r ${selectedView === 'drivers'
                       ? 'bg-blue-500'
                       : 'bg-gray-200 dark:bg-gray-700'
                       }`}
@@ -229,7 +234,7 @@ const Home = () => {
                 <View className="flex-row space-x-2">
                   <TouchableOpacity
                     onPress={() => setSelectedRange('week')}
-                    className={`px-3 py-1 rounded ${selectedRange === 'week'
+                    className={`px-3 py-1 rounded-l ${selectedRange === 'week'
                       ? selectedView === 'drivers'
                         ? 'bg-blue-500'
                         : 'bg-green-500'
@@ -244,7 +249,7 @@ const Home = () => {
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => setSelectedRange('month')}
-                    className={`px-3 py-1 rounded ${selectedRange === 'month'
+                    className={`px-3 py-1 ${selectedRange === 'month'
                       ? selectedView === 'drivers'
                         ? 'bg-blue-500'
                         : 'bg-green-500'
@@ -259,7 +264,7 @@ const Home = () => {
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => setSelectedRange('year')}
-                    className={`px-3 py-1 rounded ${selectedRange === 'year'
+                    className={`px-3 py-1 rounded-r ${selectedRange === 'year'
                       ? selectedView === 'drivers'
                         ? 'bg-blue-500'
                         : 'bg-green-500'
@@ -308,41 +313,37 @@ const Home = () => {
                   noOfSections={chartStats.noOfSections}
                 />
               </View>
-            </View>
 
-            <View className="rounded-xl mb-6" style={{
-              backgroundColor: colorScheme === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700
-            }}>
-              <TouchableOpacity onPress={() => navigation.navigate('CompanyList')} className="flex-row justify-between items-center px-4 py-5">
-                <Text className="text-base font-semibold text-slate-900 dark:text-gray-100">
-                  Total Companies
+            </View>
+            <View className={`${colorScheme === 'light' ? 'bg-gray-100' : 'bg-slate-700'} rounded-xl`}>
+              <View className='mx-4 mt-4 flex-1'>
+                <Text className={`w-1/2 text-center text-md rounded py-1 px-3 text-white ${(totalDrivers > totalCompanies) ? 'bg-blue-500' : 'bg-green-500'}`}>
+                  Entity Distribution
                 </Text>
-                <View className="flex-row items-center gap-x-2">
-                  <Text className="bg-green-500 text-white font-semibold text-base rounded-md px-2">
-                    {displayCompanies}
-                  </Text>
-                  <Icon
-                    name="chevron-right"
-                    size={16}
-                    color={colorScheme === 'dark' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700}
-                  />
+              </View>
+              <View className='items-center p-1'>
+                <PieChart
+                  data={pieData}
+                  donut
+                  showGradient
+                  sectionAutoFocus
+                  isThreeD
+                  radius={100}
+                  innerRadius={60}
+                  innerCircleColor={colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray200}
+                  centerLabelComponent={() => <PieCenterLabel totalCompanies={totalCompanies} totalDrivers={totalDrivers} />}
+                />
+              </View>
+              <View className="flex-row justify-center flex-wrap flex-1 pb-5 gap-x-4">
+                <View className="flex-row items-center gap-x-1">
+                  {renderDot('#4ADE80')}
+                  <Text style={{ color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100 }} className={`text-xs`}>Companies: {totalCompanies}</Text>
                 </View>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate('DriverList')} className="flex-row justify-between items-center px-4 py-5 border-b-2 border-slate-200 dark:border-slate-700">
-                <Text className="text-base font-semibold text-slate-900 dark:text-gray-100">
-                  Total Drivers
-                </Text>
-                <View className="flex-row items-center gap-x-2">
-                  <Text className="bg-blue-500 text-white font-semibold text-base rounded-md px-2">
-                    {displayDrivers}
-                  </Text>
-                  <Icon
-                    name="chevron-right"
-                    size={16}
-                    color={colorScheme === 'dark' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700}
-                  />
+                <View className="flex-row items-center gap-x-1">
+                  {renderDot('#60A5FA')}
+                  <Text style={{ color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100 }} className={'text-xs'}>Drivers: {totalDrivers}</Text>
                 </View>
-              </TouchableOpacity>
+              </View>
             </View>
           </>
         )}

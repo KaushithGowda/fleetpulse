@@ -183,7 +183,7 @@ export function EntityTable<T extends { id: string }>({
                                 <MaterialCommunityIcons
                                     name={menuVisible ? 'chevron-up' : 'chevron-down'}
                                     size={18}
-                                    color={screenType === 'company' ? COLORS.textBlue500 : COLORS.textGreen500}
+                                    color={screenType === 'driver' ? COLORS.textBlue500 : COLORS.textGreen500}
                                 />
                             </TouchableOpacity>
                         }
@@ -197,7 +197,7 @@ export function EntityTable<T extends { id: string }>({
                                 }}
                                 title={`${n}`}
                                 titleStyle={styles.MenuTitle}
-                                rippleColor={screenType === 'company' ? COLORS.textBlue500 : COLORS.textGreen500}
+                                rippleColor={screenType === 'driver' ? COLORS.textBlue500 : COLORS.textGreen500}
                             />
                         ))}
                     </Menu>
