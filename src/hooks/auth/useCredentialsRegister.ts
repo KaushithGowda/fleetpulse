@@ -26,7 +26,7 @@ export const useCredentialsRegister = () => {
             const { token, user } = data
             if (token && user) {
                 useAuthStore.getState().setAuth(token, user)
-                showToast({ isSuccess: true, successMsg: 'Welcome to our community' })
+                showToast({ isSuccess: true, successTitle: 'Welcome to our community👯‍♀️', successDesc: 'We are going to have a lot of fun together' })
             }
         },
     })
@@ -43,7 +43,7 @@ export const useCredentialsRegister = () => {
             } else if (typeof rawErrors === 'string') {
                 errorMessage = rawErrors
             }
-            showToast({ isError: true, errorMsg: errorMessage })
+            showToast({ isError: true, errorTitle: 'Registration Failed⚠️', errorDesc: errorMessage })
             return { success: false }
         }
     }

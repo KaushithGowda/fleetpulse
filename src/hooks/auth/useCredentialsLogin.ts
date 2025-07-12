@@ -26,7 +26,7 @@ export const useCredentialsLogin = () => {
       const { token, user } = data
       if (token && user) {
         useAuthStore.getState().setAuth(token, user)
-        showToast({ isSuccess: true, successMsg: 'Logged In' })
+        showToast({ isSuccess: true, successTitle: 'Logged In✅', successDesc: 'Welcome back buddy' })
       }
     },
   })
@@ -43,8 +43,7 @@ export const useCredentialsLogin = () => {
       } else if (typeof rawErrors === 'string') {
         errorMessage = rawErrors
       }
-      showToast({ isError: true, errorMsg: errorMessage })
-      showToast({ isError: true, errorMsg: errorMessage })
+      showToast({ isError: true, errorTitle: 'Login Failed⚠️', errorDesc: errorMessage })
       return { success: false }
     }
   }
