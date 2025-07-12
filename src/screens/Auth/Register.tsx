@@ -95,7 +95,7 @@ const Register = () => {
                 keyboardType="default"
                 onChangeText={(text) => setValue('name', text)}
                 onSubmitEditing={() => emailInputRef.current?.focus()}
-                autoCapitalize="sentences"
+                autoCapitalize="words"
                 autoComplete='name'
                 inputMode="text"
                 value={watch('name')}

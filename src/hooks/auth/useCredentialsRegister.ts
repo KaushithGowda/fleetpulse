@@ -16,10 +16,9 @@ export const useCredentialsRegister = () => {
         isError,
     } = useMutation({
         mutationFn: async ({ name, email, password }: { name: string; email: string; password: string }) => {
-            const normalizedEmail = email.trim().toLowerCase()
             const res = await axiosPublic.post(
                 `${env.apiBaseUrl}/auth/register`,
-                { name, email: normalizedEmail, password }
+                { name: name.trim().toLowerCase(), email: email.trim().toLowerCase(), password }
             )
             return res.data
         },
@@ -27,7 +26,7 @@ export const useCredentialsRegister = () => {
             const { token, user } = data
             if (token && user) {
                 useAuthStore.getState().setAuth(token, user)
-                showToast({ isSuccess: true, successMsg: 'Registration successful' })
+                showToast({ isSuccess: true, successMsg: 'Welcome to our community' })
             }
         },
     })

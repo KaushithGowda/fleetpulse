@@ -16,10 +16,9 @@ export const useCredentialsLogin = () => {
     isError,
   } = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      const emailNormalized = email.trim().toLowerCase()
       const res = await axiosPublic.post(
         `${env.apiBaseUrl}/auth/login`,
-        { email: emailNormalized, password },
+        { email: email.trim().toLowerCase(), password },
       )
       return res.data
     },
@@ -27,7 +26,7 @@ export const useCredentialsLogin = () => {
       const { token, user } = data
       if (token && user) {
         useAuthStore.getState().setAuth(token, user)
-        showToast({ isSuccess: true, successMsg: 'Login successful' })
+        showToast({ isSuccess: true, successMsg: 'Logged In' })
       }
     },
   })

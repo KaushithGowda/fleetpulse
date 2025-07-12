@@ -4,7 +4,7 @@ import * as Keychain from 'react-native-keychain'
 import { setupAxiosAuthInterceptor } from '@/src/lib/api/setupAxiosAuthInterceptor'
 
 type AuthStore = {
-  user: { id: string; email: string } | null
+  user: { id: string; email: string, name: string } | null
   hasHydrated: boolean
   setAuth: (token: string, user: AuthStore['user']) => void
   logout: () => void
