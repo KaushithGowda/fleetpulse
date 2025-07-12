@@ -1,9 +1,11 @@
-
+import { env } from '@/src/constants/env'
 
 import { useAuthStore } from '@/src/store/useAuthStore'
+
 import { axiosPublic } from '@/src/lib/api/axios'
 import { useMutation } from '@tanstack/react-query'
-import { env } from '@/src/constants/env'
+
+import { showToast } from '@/src/utils/showToast'
 
 export const useCredentialsRegister = () => {
 
@@ -12,12 +14,12 @@ export const useCredentialsRegister = () => {
         isPending: isLoading,
         isSuccess,
         isError,
-        error,
     } = useMutation({
         mutationFn: async ({ name, email, password }: { name: string; email: string; password: string }) => {
+            const normalizedEmail = email.trim().toLowerCase()
             const res = await axiosPublic.post(
                 `${env.apiBaseUrl}/auth/register`,
-                { name, email, password }
+                { name, email: normalizedEmail, password }
             )
             return res.data
         },
@@ -25,6 +27,7 @@ export const useCredentialsRegister = () => {
             const { token, user } = data
             if (token && user) {
                 useAuthStore.getState().setAuth(token, user)
+                showToast({ isSuccess: true, successMsg: 'Registration successful' })
             }
         },
     })
@@ -34,15 +37,22 @@ export const useCredentialsRegister = () => {
             await mutateAsync({ name, email, password })
             return { success: true }
         } catch (err) {
-            console.error(err)
+            const rawErrors = (err as any)?.response?.data?.error
+            let errorMessage = 'Something went wrong'
+            if (Array.isArray(rawErrors) && rawErrors.length > 0) {
+                errorMessage = rawErrors[0].message
+            } else if (typeof rawErrors === 'string') {
+                errorMessage = rawErrors
+            }
+            showToast({ isError: true, errorMsg: errorMessage })
             return { success: false }
         }
     }
 
     return {
         register,
-        error: isError ? (error as any)?.response?.data?.error || 'Something went wrong' : null,
-        success: isSuccess ? 'Registration successful' : null,
         isLoading,
+        isSuccess,
+        isError
     }
 }

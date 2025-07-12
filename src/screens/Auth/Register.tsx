@@ -1,43 +1,50 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useCredentialsRegister } from '@/src/hooks/auth/useCredentialsRegister'
+import { useNavigation } from '@react-navigation/native';
+
+import { registerSchema } from '@/src/schemas/register.schema'
+
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { AuthTransition } from '@/src/components/transistions/auth-transition';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
+  View,
+  Text,
   KeyboardAvoidingView,
   Platform,
-  TextInput,
-  Text,
-  View,
   TouchableOpacity,
+  TextInput,
   ScrollView,
-} from 'react-native'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { registerSchema as RegisterSchema } from '@/src/schemas/register.schema'
-import { useNavigation } from '@react-navigation/native'
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { AuthTransition } from '@/src/components/transistions/auth-transition'
-import { CustomTextInput } from '@/src/components/FormElements/CustomTextInput'
-import { CustomButton } from '@/src/components/FormElements/CustomButton'
-import { useCredentialsRegister } from '@/src/hooks/auth/useCredentialsRegister'
-import { showToast } from '@/src/utils/showToast'
+  StyleSheet,
+} from 'react-native';
+import { CustomTextInput } from '@/src/components/FormElements/CustomTextInput';
+import { CustomButton } from '@/src/components/FormElements/CustomButton';
+import { useColorScheme } from 'nativewind';
+import { COLORS } from '@/src/constants/colors';
+
+type FormData = z.infer<typeof registerSchema>;
 
 const Register = () => {
-  // const [error, setError] = useState<string | null>(null)
-  // const [success, setSuccess] = useState<string | null>(null)
+  const { colorScheme } = useColorScheme();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>()
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const nameInputRef = useRef<TextInput | null>(null)
   const emailInputRef = useRef<TextInput | null>(null)
   const passwordInputRef = useRef<TextInput | null>(null)
 
-  const navigation = useNavigation<NativeStackNavigationProp<any>>()
-
   const {
     register,
     setValue,
-    handleSubmit,
-    formState: { errors, isSubmitting },
     watch,
-  } = useForm<z.infer<typeof RegisterSchema>>({
-    resolver: zodResolver(RegisterSchema),
+    handleSubmit,
+    formState: { errors, isSubmitting }
+  } = useForm<FormData>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       name: '',
       email: '',
@@ -47,8 +54,6 @@ const Register = () => {
 
   const {
     register: registerUser,
-    error: registerError,
-    success: registerSuccess,
   } = useCredentialsRegister()
 
   useEffect(() => {
@@ -57,27 +62,23 @@ const Register = () => {
     register('password')
   }, [register])
 
-  useEffect(() => {
-    if (registerError) showToast({ isError: true, errorMsg: registerError })
-    if (registerSuccess) showToast({ isSuccess: true, successMsg: registerSuccess })
-  }, [registerError, registerSuccess])
-
-  const onSubmit = async (data: z.infer<typeof RegisterSchema>) => {
+  const onSubmit = async (data: FormData) => {
     await registerUser(data.name, data.email, data.password)
   }
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-gray-100 dark:bg-black"
+      style={{ backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300 }}
+      className="flex-1 px-6"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <AuthTransition>
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={styles.contentContainerStyle}
           keyboardShouldPersistTaps="handled"
         >
-          <View className="flex-1 justify-center px-6">
-            <View className='gap-y-2 mb-8'>
+          <View className="flex-1 justify-center">
+            <View className='mb-8 gap-y-1'>
               <Text className="text-4xl font-bold text-center text-gray-900 dark:text-white">
                 Create Account
               </Text>
@@ -92,9 +93,10 @@ const Register = () => {
                 placeholder="Full Name"
                 returnKeyType="next"
                 keyboardType="default"
-                onChangeText={(text) => setValue('name', text, { shouldValidate: true })}
+                onChangeText={(text) => setValue('name', text)}
                 onSubmitEditing={() => emailInputRef.current?.focus()}
-                autoCapitalize="words"
+                autoCapitalize="sentences"
+                autoComplete='name'
                 inputMode="text"
                 value={watch('name')}
                 error={errors.name}
@@ -102,14 +104,16 @@ const Register = () => {
 
               <CustomTextInput
                 ref={emailInputRef}
+                placeholder="Email"
                 returnKeyType="next"
                 keyboardType="email-address"
-                onChangeText={(text) => setValue('email', text, { shouldValidate: true })}
+                onChangeText={(text) => setValue('email', text)}
                 onSubmitEditing={() => passwordInputRef.current?.focus()}
-                placeholder="Email"
-                error={errors.email}
-                value={watch('email')}
+                autoCapitalize='none'
+                autoComplete='email'
                 inputMode={'email'}
+                value={watch('email')}
+                error={errors.email}
               />
 
               <CustomTextInput
@@ -117,24 +121,25 @@ const Register = () => {
                 placeholder="Password"
                 returnKeyType="done"
                 keyboardType="default"
-                onChangeText={(text) => setValue('password', text, { shouldValidate: true })}
+                onChangeText={(text) => setValue('password', text)}
                 onSubmitEditing={handleSubmit(onSubmit)}
-                isSecureEntry={true}
+                isSecureEntry={!showPassword}
+                toggleSecureEntry={() => setShowPassword(prev => !prev)}
                 inputMode="text"
                 value={watch('password')}
                 error={errors.password}
               />
+              <CustomButton
+                className='mt-2'
+                onPress={handleSubmit(onSubmit)}
+                disabled={isSubmitting}
+                title="Create Account"
+              />
             </View>
 
-            <CustomButton
-              onPress={handleSubmit(onSubmit)}
-              disabled={isSubmitting}
-              title="Create Account"
-              isLoading={isSubmitting}
-            />
 
-            <View className="flex-row justify-center mt-4">
-              <Text className="text-gray-900 dark:text-white">Already have an account? </Text>
+            <View className="flex-row items-center justify-center mt-4">
+              <Text className="text-gray-900 dark:text-white text-sm">Already have an account? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                 <Text className="text-blue-500 font-semibold text-sm">
                   Login
@@ -149,3 +154,7 @@ const Register = () => {
 }
 
 export default Register
+
+const styles = StyleSheet.create({
+  contentContainerStyle: { flexGrow: 1 }
+})

@@ -1,23 +1,23 @@
-import z from "zod";
+import { z } from 'zod';
 
 export const registerSchema = z.object({
-  email: z
-    .string()
-    .min(5, { message: 'Email must be at least 2 characters' })
-    .max(15, { message: 'Email cannot be more than 15 characters' })
-    .nonempty({ message: 'Email is required' }),
   name: z
     .string()
-    .min(5, { message: 'Name must be at least 2 characters' })
-    .max(15, { message: 'Name cannot be more than 15 characters' })
-    .nonempty({ message: 'Name is required' }),
+    .nonempty('Name is required')
+    .min(2, 'Name is too short')
+    .max(50, 'Name too long'),
+
+  email: z
+    .string()
+    .nonempty('Email is required')
+    .email('Invalid email')
+    .min(5, 'Email too short')
+    .max(50, 'Email too long'),
+
   password: z
     .string()
-    .min(5, { message: 'Password must be at least 2 characters' })
-    .max(15, { message: 'Password cannot be more than 15 characters' })
-    .nonempty({ message: 'Password is required' }),
-  // .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/, {
-  //   message:
-  //     'Password must include at least one lowercase letter, one uppercase letter, one number, and one special character',
-  // }),
-})
+    .nonempty('Password is required')
+    .min(6, 'Password too short')
+    .max(50, 'Password too long')
+    .regex(/^[a-zA-Z0-9]*$/, 'Password must be alphanumeric'),
+});

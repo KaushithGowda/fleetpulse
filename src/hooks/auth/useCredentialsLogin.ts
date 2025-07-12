@@ -4,6 +4,7 @@ import { useAuthStore } from '@/src/store/useAuthStore'
 
 import { axiosPublic } from '@/src/lib/api/axios'
 import { useMutation } from '@tanstack/react-query'
+
 import { showToast } from '@/src/utils/showToast'
 
 export const useCredentialsLogin = () => {
@@ -16,13 +17,10 @@ export const useCredentialsLogin = () => {
   } = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
       const emailNormalized = email.trim().toLowerCase()
-      console.log({ emailNormalized });
       const res = await axiosPublic.post(
         `${env.apiBaseUrl}/auth/login`,
-        { emailNormalized, password },
+        { email: emailNormalized, password },
       )
-      console.log('rep', res.data);
-
       return res.data
     },
     onSuccess: (data) => {
@@ -47,7 +45,7 @@ export const useCredentialsLogin = () => {
         errorMessage = rawErrors
       }
       showToast({ isError: true, errorMsg: errorMessage })
-      showToast({ isError: true, errorMsg:  errorMessage })
+      showToast({ isError: true, errorMsg: errorMessage })
       return { success: false }
     }
   }

@@ -41,10 +41,10 @@ const Login = () => {
   } = useCredentialsLogin();
 
   const {
-    handleSubmit,
     register,
     setValue,
     watch,
+    handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(loginSchema),
@@ -125,7 +125,7 @@ const Login = () => {
             </View>
 
             <View className="flex-row items-center justify-center">
-              <Text className="text-gray-900 dark:text-white">Don't have an account? </Text>
+              <Text className="text-gray-900 dark:text-white text-sm">Don't have an account? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                 <Text className="text-blue-500 font-semibold text-sm">
                   Register
