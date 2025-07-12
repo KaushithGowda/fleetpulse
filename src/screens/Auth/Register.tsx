@@ -17,6 +17,8 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { AuthTransition } from '@/src/components/transistions/auth-transition'
 import { CustomTextInput } from '@/src/components/FormElements/CustomTextInput'
 import { CustomButton } from '@/src/components/FormElements/CustomButton'
+import { useCredentialsRegister } from '@/src/hooks/auth/useCredentialsRegister'
+import { showToast } from '@/src/utils/showToast'
 
 const Register = () => {
   // const [error, setError] = useState<string | null>(null)
@@ -43,23 +45,25 @@ const Register = () => {
     },
   })
 
+  const {
+    register: registerUser,
+    error: registerError,
+    success: registerSuccess,
+  } = useCredentialsRegister()
+
   useEffect(() => {
     register('name')
     register('email')
     register('password')
   }, [register])
 
-  const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
-    try {
-      // setError(null)
-      // setSuccess(null)
-      // TODO: Call your signup API
-      console.log(values);
+  useEffect(() => {
+    if (registerError) showToast({ isError: true, errorMsg: registerError })
+    if (registerSuccess) showToast({ isSuccess: true, successMsg: registerSuccess })
+  }, [registerError, registerSuccess])
 
-      // setSuccess('Account created successfully')
-    } catch (err: any) {
-      // setError(err.message || 'Signup failed')
-    }
+  const onSubmit = async (data: z.infer<typeof RegisterSchema>) => {
+    await registerUser(data.name, data.email, data.password)
   }
 
   return (

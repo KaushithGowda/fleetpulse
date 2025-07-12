@@ -1,12 +1,15 @@
-import { useColorScheme } from 'nativewind';
 import React from 'react';
-import { TouchableOpacity, Text, ActivityIndicator, TouchableOpacityProps, View } from 'react-native';
+import { useColorScheme } from 'nativewind';
+
+import { COLORS } from '@/src/constants/colors';
+
+import { TouchableOpacity, Text, TouchableOpacityProps, View } from 'react-native';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type CustomButtonProps = {
     title?: string;
     onPress: () => void;
-    isLoading?: boolean;
     disabled?: boolean;
     className?: string;
     textClassName?: string;
@@ -16,7 +19,6 @@ type CustomButtonProps = {
 export const CustomButton: React.FC<CustomButtonProps> = ({
     title,
     onPress,
-    isLoading = false,
     disabled = false,
     className = '',
     textClassName = '',
@@ -27,26 +29,23 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
     return (
         <TouchableOpacity
             onPress={onPress}
-            disabled={disabled || isLoading}
+            disabled={disabled}
             activeOpacity={0.8}
-            className={`h-12 rounded-lg justify-center items-center px-2 ${disabled || isLoading ? 'opacity-60' : ''} ${className}`}
+            style={{ backgroundColor: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundSlate900 }}
+            className={`h-12 rounded-lg justify-center items-center px-2 ${disabled ? 'opacity-60' : ''} ${className}`}
             {...rest}
         >
-            {isLoading ? (
-                <ActivityIndicator color={colorScheme === 'dark' ? '#000' : '#fff'} />
-            ) : (
-                <View className="flex-row items-center gap-x-2">
-                    {
-                        title &&
-                        <Text className={`text-white font-bold ${textClassName}`}>
-                            {title}
-                        </Text>
-                    }
-                    {rightIconName && (
-                        <MaterialCommunityIcons name={rightIconName} size={18} color={'#fff'} />
-                    )}
-                </View>
-            )}
+            <View className="flex-row items-center gap-x-2">
+                {
+                    title &&
+                    <Text className={`text-gray-100 font-bold ${textClassName}`}>
+                        {title}
+                    </Text>
+                }
+                {rightIconName && (
+                    <MaterialCommunityIcons name={rightIconName} size={18} color={'#fff'} />
+                )}
+            </View>
         </TouchableOpacity>
     );
 };

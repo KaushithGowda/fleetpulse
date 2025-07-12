@@ -20,7 +20,7 @@ function App() {
         //   fetchCompanies(),
         //   fetchUserSettings(),
         // ]);
-        setTimeout(()=>{},5000)
+        // setTimeout(()=>{},5000)
       } catch (e) {
         console.warn('Error during splash API calls', e);
       } finally {

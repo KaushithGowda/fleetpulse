@@ -14,7 +14,7 @@ export default function AppNavigator() {
   const { user, hasHydrated } = useAuthStore();
   if (!hasHydrated) return null;
 
-  if (user) {
+  if (!user) {
     return <AuthStack />;
   }
 
@@ -30,7 +30,6 @@ export default function AppNavigator() {
       <Stack.Screen
         name="DriverList"
         component={DriverList}
-        // options={{ headerShown: false }}
       />
       <Stack.Screen
         name="DriverForm"
@@ -40,7 +39,6 @@ export default function AppNavigator() {
       <Stack.Screen
         name="CompanyList"
         component={CompanyList}
-        // options={{ headerShown: false }}
       />
       <Stack.Screen
         name="CompanyForm"

@@ -1,4 +1,3 @@
-// ✅ Rename to just `showToast.ts` or similar
 import Toast from 'react-native-toast-message'
 
 type toastType = {

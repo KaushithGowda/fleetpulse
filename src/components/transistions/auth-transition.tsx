@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useRef, useState } from 'react'
 import { Animated } from 'react-native'
 import { useIsFocused } from '@react-navigation/native'

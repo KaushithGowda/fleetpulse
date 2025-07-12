@@ -18,8 +18,8 @@ export const useAuthStore = create<AuthStore>()(
       hasHydrated: false,
       setAuth: async (token, user) => {
         await Keychain.setGenericPassword('auth', token, { service: 'auth-token' })
-        set({ user })
         setupAxiosAuthInterceptor()
+        set({ user })
       },
       logout: async () => {
         await Keychain.resetGenericPassword({ service: 'auth-token' })

@@ -1,6 +1,10 @@
+import { env } from '@/src/constants/env'
+
 import { useAuthStore } from '@/src/store/useAuthStore'
+
 import { axiosPublic } from '@/src/lib/api/axios'
 import { useMutation } from '@tanstack/react-query'
+import { showToast } from '@/src/utils/showToast'
 
 export const useCredentialsLogin = () => {
 
@@ -9,20 +13,23 @@ export const useCredentialsLogin = () => {
     isPending: isLoading,
     isSuccess,
     isError,
-    error,
   } = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
+      const emailNormalized = email.trim().toLowerCase()
+      console.log({ emailNormalized });
       const res = await axiosPublic.post(
-        `${process.env.EXPO_PUBLIC_API_URL}/api/mobile-login`,
-        { email, password }
+        `${env.apiBaseUrl}/auth/login`,
+        { emailNormalized, password },
       )
+      console.log('rep', res.data);
+
       return res.data
     },
     onSuccess: (data) => {
       const { token, user } = data
       if (token && user) {
         useAuthStore.getState().setAuth(token, user)
-        // router.replace('/(tabs)/maps')
+        showToast({ isSuccess: true, successMsg: 'Login successful' })
       }
     },
   })
@@ -32,15 +39,23 @@ export const useCredentialsLogin = () => {
       await mutateAsync({ email, password })
       return { success: true }
     } catch (err) {
-      console.error(err)
+      const rawErrors = (err as any)?.response?.data?.error
+      let errorMessage = 'Something went wrong'
+      if (Array.isArray(rawErrors) && rawErrors.length > 0) {
+        errorMessage = rawErrors[0].message
+      } else if (typeof rawErrors === 'string') {
+        errorMessage = rawErrors
+      }
+      showToast({ isError: true, errorMsg: errorMessage })
+      showToast({ isError: true, errorMsg:  errorMessage })
       return { success: false }
     }
   }
 
   return {
     login,
-    error: isError ? (error as any)?.response?.data?.error || 'Something went wrong' : null,
-    success: isSuccess ? 'Login successful' : null,
     isLoading,
+    isSuccess,
+    isError
   }
 }

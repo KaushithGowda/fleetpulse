@@ -1,4 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useCredentialsLogin } from '@/src/hooks/auth/useCredentialsLogin';
+import { useNavigation } from '@react-navigation/native';
+
+import { loginSchema } from '@/src/schemas/login.schema';
+
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { AuthTransition } from '@/src/components/transistions/auth-transition';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   View,
   Text,
@@ -7,31 +18,26 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  StyleSheet,
 } from 'react-native';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema } from '@/src/schemas/login.schema';
-import { AuthTransition } from '@/src/components/transistions/auth-transition';
-import { useCredentialsLogin } from '@/src/hooks/auth/useCredentialsLogin';
-import { showToast } from '@/src/utils/showToast';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CustomTextInput } from '@/src/components/FormElements/CustomTextInput';
 import { CustomButton } from '@/src/components/FormElements/CustomButton';
+import { useColorScheme } from 'nativewind';
+import { COLORS } from '@/src/constants/colors';
 
 type FormData = z.infer<typeof loginSchema>;
 
 const Login = () => {
+  const { colorScheme } = useColorScheme();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>()
+
   const [showPassword, setShowPassword] = useState(false);
+  
   const emailInputRef = useRef<TextInput | null>(null);;
   const passwordInputRef = useRef<TextInput | null>(null);;
-  const navigation = useNavigation<NativeStackNavigationProp<any>>()
 
   const {
     login: credLogin,
-    error: credError,
-    success: credSuccess,
   } = useCredentialsLogin();
 
   const {
@@ -53,26 +59,22 @@ const Login = () => {
     register('password');
   }, [register]);
 
-  useEffect(() => {
-    if (credError) showToast({ isError: true, errorMsg: credError });
-    if (credSuccess) showToast({ isSuccess: true, successMsg: credSuccess });
-  }, [credError, credSuccess]);
-
   const onSubmit = async (data: FormData) => {
     await credLogin(data.email, data.password);
   };
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-gray-100 dark:bg-black"
+      style={{ backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300 }}
+      className="flex-1 px-6"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <AuthTransition>
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={styles.contentContainerStyle}
           keyboardShouldPersistTaps="handled"
         >
-          <View className="flex-1 justify-center px-6">
+          <View className="flex-1 justify-center">
             <View className="mb-16 gap-y-1">
               <Text className="text-4xl font-bold text-center text-gray-900 dark:text-white">Welcome Back</Text>
               <Text className="text-lg text-center text-gray-900 dark:text-white">Login to your account</Text>
@@ -109,17 +111,17 @@ const Login = () => {
               />
 
               <CustomButton
+                className='mt-2'
                 onPress={handleSubmit(onSubmit)}
                 disabled={isSubmitting}
                 title="Login"
-                isLoading={isSubmitting}
               />
             </View>
 
             <View className="flex-row items-center justify-center gap-2 my-5 px-5">
-              <View className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+              <View className="flex-1 h-px bg-gray-400 dark:bg-gray-700" />
               <Text className="text-xs text-gray-500 dark:text-white uppercase px-5">or</Text>
-              <View className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+              <View className="flex-1 h-px bg-gray-400 dark:bg-gray-700" />
             </View>
 
             <View className="flex-row items-center justify-center">
@@ -138,3 +140,7 @@ const Login = () => {
 };
 
 export default Login;
+
+const styles = StyleSheet.create({
+  contentContainerStyle: { flexGrow: 1 }
+})

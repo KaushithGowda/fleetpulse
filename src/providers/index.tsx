@@ -1,8 +1,11 @@
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { ReactQueryProvider } from "./ReactQueryProvider";
-import { ToastProvider } from "./toast-provider";
 import { ReactNode } from 'react';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider, Portal } from "react-native-paper";
+
+import { ReactQueryProvider } from "@/src/providers/ReactQueryProvider";
+import { ToastProvider } from '@/src/providers/toast-provider';
+
+import LoadingOverlay from "@/src/components/LoadingOverlay/LoadingOverlay";
 
 export const Provider = ({ children }: { children: ReactNode }) => {
   return (
@@ -10,9 +13,10 @@ export const Provider = ({ children }: { children: ReactNode }) => {
       <PaperProvider>
         <Portal.Host>
           <ReactQueryProvider>
-            <ToastProvider />
+            <LoadingOverlay />
             {children}
           </ReactQueryProvider>
+          <ToastProvider />
         </Portal.Host>
       </PaperProvider>
     </GestureHandlerRootView>
