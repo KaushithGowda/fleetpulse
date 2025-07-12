@@ -32,7 +32,7 @@ const PieChartGraph = ({
   return (
     <View className={`${colorScheme === 'light' ? 'bg-gray-100' : 'bg-slate-700'} rounded-xl`}>
       <View className='mx-4 mt-4 flex-1'>
-        <Text className={`text-center text-md rounded py-3 px-3 text-gray-100 bg-black`}>
+        <Text className={`text-center text-md rounded p-3 text-gray-100 bg-black`}>
           Entity Distribution
         </Text>
       </View>
@@ -70,6 +70,11 @@ const PieChartGraph = ({
           />
           <Text style={{ color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100 }} className={'text-xs'}>Drivers: {totalDrivers}</Text>
         </View>
+      </View>
+      <View className="pb-4 items-center">
+        <Text className="text-xs text-gray-500 dark:text-gray-300">
+          Add companies and drivers to get a sweet pie chart 🍰
+        </Text>
       </View>
     </View>
   );

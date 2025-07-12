@@ -1,81 +1,34 @@
 /* eslint-disable react-native/no-inline-styles */
-import { COLORS } from "@/src/constants/colors";
-import { fakeStats } from "@/src/data/fakeStats";
+import { useMemo } from "react";
 import { useColorScheme } from "nativewind";
-import { useMemo, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+
+import { COLORS } from "@/src/constants/colors";
+
 import { BarChart } from "react-native-gifted-charts";
 
-export const BarChartGraph = () => {
+import { Text, TouchableOpacity, View } from "react-native";
+
+type Range = 'week' | 'month' | 'year';
+
+type ViewType = 'companies' | 'drivers';
+
+type BarChartGraphProps = {
+  selectedView: ViewType;
+  setSelectedView: (args: ViewType) => void;
+  selectedRange: Range;
+  setSelectedRange: (args: Range) => void;
+  barData: any[];
+};
+
+export const BarChartGraph = ({
+  selectedView,
+  setSelectedView,
+  selectedRange,
+  setSelectedRange,
+  barData,
+}: BarChartGraphProps) => {
   const { colorScheme } = useColorScheme();
-  const [selectedView, setSelectedView] = useState<'companies' | 'drivers'>(
-    'companies',
-  );
-  const [selectedRange, setSelectedRange] = useState<'week' | 'month' | 'year'>(
-    'month',
-  );
-
-  // Helper for generating labels for the chart
-  const getLabels = (range: 'week' | 'month' | 'year') => {
-    if (range === 'year')
-      return [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ];
-    if (range === 'month') return ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-    return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  };
-
-  // Bar data for chart
-  const barData = useMemo(() => {
-    const rawData = fakeStats[selectedView]?.[selectedRange] ?? [];
-    const labels = getLabels(selectedRange);
-    const paddedData = [...rawData];
-    while (paddedData.length < labels.length) paddedData.push(0);
-
-    return labels.map((label, index) => {
-      const value = paddedData[index] ?? 0;
-      const isDrivers = selectedView === 'drivers';
-      const isDark = colorScheme === 'dark';
-      return {
-        value,
-        label,
-        frontColor: isDrivers
-          ? isDark
-            ? '#3B82F6'
-            : '#60A5FA'
-          : isDark
-            ? '#22C55E'
-            : '#4ADE80',
-        sideColor: isDrivers
-          ? isDark
-            ? '#1E40AF'
-            : '#3B82F6'
-          : isDark
-            ? '#166534'
-            : '#22C55E',
-        topColor: isDrivers
-          ? isDark
-            ? '#60A5FA'
-            : '#BFDBFE'
-          : isDark
-            ? '#86EFAC'
-            : '#BBF7D0',
-      };
-    });
-  }, [selectedView, selectedRange, colorScheme]);
-
-  // Chart stats for axis scaling
+  
   const chartStats = useMemo(() => {
     const values = barData.map((d: { value: any; }) => d.value);
     const maxVal = Math.max(...values, 0);
@@ -194,13 +147,18 @@ export const BarChartGraph = () => {
           yAxisThickness={0}
           xAxisThickness={0}
           topLabelTextStyle={{
-            fontSize: 10,
+            fontSize: 15,
             color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100,
           }}
           maxValue={chartStats.maxValue}
           stepValue={chartStats.stepValue}
           noOfSections={chartStats.noOfSections}
         />
+        {barData.every(bar => bar.value === 0) && (
+          <Text className="text-center mt-4 text-sm text-gray-600 dark:text-gray-300">
+            Add more companies and drivers to raise your bar 📊
+          </Text>
+        )}
       </View>
     </View>
   );

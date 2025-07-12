@@ -4,13 +4,17 @@ import { useAuthStore } from '@/src/store/useAuthStore'
 
 import { axiosPublic } from '@/src/lib/api/axios'
 import { useMutation } from '@tanstack/react-query'
+import { useEffect } from 'react'
 
 import { showToast } from '@/src/utils/showToast'
+import { handleQueryError } from '@/src/utils/handleQueryError'
 
 export const useCredentialsRegister = () => {
 
     const {
         mutateAsync,
+        data,
+        error,
         isPending: isLoading,
         isSuccess,
         isError,
@@ -22,28 +26,27 @@ export const useCredentialsRegister = () => {
             )
             return res.data
         },
-        onSuccess: (data) => {
-            const { token, user } = data
-            if (token && user) {
-                useAuthStore.getState().setAuth(token, user)
-                showToast({ isSuccess: true, successTitle: 'Welcome to our community👯‍♀️', successDesc: 'We are going to have a lot of fun together' })
-            }
-        },
     })
+
+    useEffect(() => {
+        if (isSuccess && data?.token && data?.user) {
+            const { token, user } = data
+            useAuthStore.getState().setAuth(token, user)
+            showToast({ isSuccess: true, successTitle: 'Welcome to our community👯‍♀️', successDesc: 'We are going to have a lot of fun together' })
+        }
+    }, [isSuccess, data])
+
+    useEffect(() => {
+        if (isError) {
+            handleQueryError(error, 'Registration Failed⚠️')
+        }
+    }, [isError, error])
 
     const register = async (name: string, email: string, password: string) => {
         try {
             await mutateAsync({ name, email, password })
             return { success: true }
-        } catch (err) {
-            const rawErrors = (err as any)?.response?.data?.error
-            let errorMessage = 'Something went wrong'
-            if (Array.isArray(rawErrors) && rawErrors.length > 0) {
-                errorMessage = rawErrors[0].message
-            } else if (typeof rawErrors === 'string') {
-                errorMessage = rawErrors
-            }
-            showToast({ isError: true, errorTitle: 'Registration Failed⚠️', errorDesc: errorMessage })
+        } catch {
             return { success: false }
         }
     }
