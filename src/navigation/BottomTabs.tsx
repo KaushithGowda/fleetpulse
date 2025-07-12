@@ -57,10 +57,10 @@ function getTabBarIcon(routeName: string) {
   }) => {
     let iconName = 'home';
 
-    if (routeName === 'Companies') iconName = 'building-o';
-    else if (routeName === 'Drivers') iconName = 'truck';
-    else if (routeName === 'Home') iconName = 'home';
-    else if (routeName === 'Settings') iconName = 'cog';
+    if (routeName === 'CompanyTab') iconName = 'building-o';
+    else if (routeName === 'DriverTab') iconName = 'truck';
+    else if (routeName === 'HomeTab') iconName = 'home';
+    else if (routeName === 'SettingsTab') iconName = 'cog';
 
     return (
       <TabIcon
@@ -111,8 +111,8 @@ export default function BottomTabs() {
         tabBarPosition: 'bottom',
       })}
     >
-      <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Companies" component={CompanyList} options={{
+      <Tab.Screen name="HomeTab" component={Home} />
+      <Tab.Screen name="CompanyTab" component={CompanyList} options={{
         headerRight: () => (
           <CustomButton
             onPress={() => navigation.navigate('CompanyForm')}
@@ -121,7 +121,7 @@ export default function BottomTabs() {
           />
         ),
       }} />
-      <Tab.Screen name="Drivers" component={DriverList} options={{
+      <Tab.Screen name="DriverTab" component={DriverList} options={{
         headerRight: () => (
           <CustomButton
             onPress={() => navigation.navigate('DriverForm')}
@@ -130,7 +130,7 @@ export default function BottomTabs() {
           />
         ),
       }} />
-      <Tab.Screen name="Settings" component={Settings} />
+      <Tab.Screen name="SettingsTab" component={Settings} />
     </Tab.Navigator>
   );
 }

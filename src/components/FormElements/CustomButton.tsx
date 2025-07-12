@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import { useColorScheme } from 'nativewind';
 
@@ -31,7 +32,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
             onPress={onPress}
             disabled={disabled}
             activeOpacity={0.8}
-            style={{ backgroundColor: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundSlate900 }}
+            style={{ backgroundColor: colorScheme === 'light' ? COLORS.backgroundSlate700 : '#000' }}
             className={`h-12 rounded-lg justify-center items-center px-2 ${disabled ? 'opacity-60' : ''} ${className}`}
             {...rest}
         >
