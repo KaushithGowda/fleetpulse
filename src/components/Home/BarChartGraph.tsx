@@ -7,6 +7,7 @@ import { COLORS } from "@/src/constants/colors";
 import { BarChart } from "react-native-gifted-charts";
 
 import { Text, TouchableOpacity, View } from "react-native";
+import { BarAnimation } from "@/src/components/transistions/BarAnimation";
 
 type Range = 'week' | 'month' | 'year';
 
@@ -28,7 +29,7 @@ export const BarChartGraph = ({
   barData,
 }: BarChartGraphProps) => {
   const { colorScheme } = useColorScheme();
-  
+
   const chartStats = useMemo(() => {
     const values = barData.map((d: { value: any; }) => d.value);
     const maxVal = Math.max(...values, 0);
@@ -116,49 +117,50 @@ export const BarChartGraph = ({
       </View>
 
       <View>
-        <BarChart
-          key={`bar-${selectedView}-${selectedRange}`}
-          isAnimated={false}
-          data={barData}
-          barWidth={selectedRange === 'year' ? 20 : 30}
-          sideWidth={15}
-          isThreeD
-          side="right"
-          rotateLabel={selectedRange === 'year'}
-          xAxisLabelTextStyle={{
-            color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100,
-            fontWeight: 'bold',
-            fontSize: 10,
-          }}
-          labelsExtraHeight={selectedRange === 'year' ? 20 : 0}
-          animationDuration={300}
-          scrollAnimation
-          initialSpacing={10}
-          spacing={selectedRange === 'year' ? 15 : 30}
-          scrollToEnd={selectedRange === 'year'}
-          showScrollIndicator={selectedRange === 'year'}
-          disableScroll={false}
-          nestedScrollEnabled
-          barBorderRadius={6}
-          showValuesAsTopLabel
-          hideRules
-          hideAxesAndRules
-          yAxisLabelWidth={0}
-          yAxisThickness={0}
-          xAxisThickness={0}
-          topLabelTextStyle={{
-            fontSize: 15,
-            color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100,
-          }}
-          maxValue={chartStats.maxValue}
-          stepValue={chartStats.stepValue}
-          noOfSections={chartStats.noOfSections}
-        />
-        {barData.every(bar => bar.value === 0) && (
-          <Text className="text-center mt-4 text-sm text-gray-600 dark:text-gray-300">
-            Add more companies and drivers to raise your bar 📊
-          </Text>
-        )}
+        <BarAnimation>
+          <BarChart
+            key={`bar-${selectedView}-${selectedRange}`}
+            isAnimated={false}
+            data={barData}
+            barWidth={selectedRange === 'year' ? 20 : 30}
+            sideWidth={15}
+            isThreeD
+            side="right"
+            rotateLabel={selectedRange === 'year'}
+            xAxisLabelTextStyle={{
+              color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100,
+              fontWeight: 'bold',
+              fontSize: 10,
+            }}
+            labelsExtraHeight={selectedRange === 'year' ? 20 : 0}
+            animationDuration={300}
+            scrollAnimation
+            initialSpacing={10}
+            spacing={selectedRange === 'year' ? 15 : 30}
+            scrollToEnd={selectedRange === 'year'}
+            showScrollIndicator={selectedRange === 'year'}
+            disableScroll={false}
+            nestedScrollEnabled
+            barBorderRadius={6}
+            showValuesAsTopLabel
+            hideRules
+            hideAxesAndRules
+            yAxisLabelWidth={0}
+            yAxisThickness={0}
+            xAxisThickness={0}
+            topLabelTextStyle={{
+              fontSize: 15,
+              color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100,
+            }}
+            maxValue={chartStats.maxValue}
+            stepValue={chartStats.stepValue}
+            noOfSections={chartStats.noOfSections}
+          />
+        </BarAnimation>
+
+        <Text className="text-center mt-4 text-sm text-gray-600 dark:text-gray-300">
+          Add more companies and drivers to raise your bar 📊
+        </Text>
       </View>
     </View>
   );

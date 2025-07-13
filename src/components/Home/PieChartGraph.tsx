@@ -1,21 +1,19 @@
-/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import { COLORS } from "@/src/constants/colors";
 import { Text, View } from "react-native";
 import { PieChart } from 'react-native-gifted-charts';
 import { PieCenterLabel } from "./PieChartLabel";
 import { useColorScheme } from "nativewind";
+import { PieAnimation } from "@/src/components/transistions/PieAnimation";
 
 type PieChartGraphProps = {
   totalCompanies: number;
   totalDrivers: number;
 };
 
-const PieChartGraph = ({
-  totalCompanies,
-  totalDrivers,
-}: PieChartGraphProps) => {
+const PieChartGraph = ({ totalCompanies, totalDrivers }: PieChartGraphProps) => {
   const { colorScheme } = useColorScheme();
+
   const pieData = [
     {
       value: totalCompanies,
@@ -29,6 +27,7 @@ const PieChartGraph = ({
       gradientCenterColor: '#3B82F6',
     },
   ];
+
   return (
     <View className={`${colorScheme === 'light' ? 'bg-gray-100' : 'bg-slate-700'} rounded-xl`}>
       <View className='mx-4 mt-4 flex-1'>
@@ -36,41 +35,42 @@ const PieChartGraph = ({
           Entity Distribution
         </Text>
       </View>
-      <View className='items-center p-1'>
-        <PieChart
-          data={pieData}
-          donut
-          showGradient
-          sectionAutoFocus
-          isThreeD
-          showText
-          textColor="black"
-          radius={120}
-          innerRadius={50}
-          innerCircleColor={colorScheme === 'dark' ? '#000' : COLORS.backgroundGray200}
-          centerLabelComponent={() => <PieCenterLabel totalCompanies={totalCompanies} totalDrivers={totalDrivers} />}
-        />
+
+      <View className="items-center p-1">
+        <PieAnimation>
+          <PieChart
+            data={pieData}
+            donut
+            showGradient
+            sectionAutoFocus
+            isThreeD
+            showText
+            textColor="black"
+            radius={120}
+            innerRadius={50}
+            innerCircleColor={colorScheme === 'dark' ? '#000' : COLORS.backgroundGray200}
+            centerLabelComponent={() => (
+              <PieCenterLabel totalCompanies={totalCompanies} totalDrivers={totalDrivers} />
+            )}
+          />
+        </PieAnimation>
       </View>
+
       <View className="flex-row justify-center flex-wrap flex-1 pb-5 gap-x-4">
         <View className="flex-row items-center gap-x-1">
-          <View
-            className='h-2.5 w-2.5 rounded-full'
-            style={{
-              backgroundColor: COLORS.textBlue500,
-            }}
-          />
-          <Text style={{ color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100 }} className={`text-xs`}>Companies: {totalCompanies}</Text>
+          <View className='h-2.5 w-2.5 rounded-full' style={{ backgroundColor: COLORS.textBlue500 }} />
+          <Text style={{ color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100 }} className={`text-xs`}>
+            Companies: {totalCompanies}
+          </Text>
         </View>
         <View className="flex-row items-center gap-x-1">
-          <View
-            className='h-2.5 w-2.5 rounded-full'
-            style={{
-              backgroundColor: COLORS.textBlue500,
-            }}
-          />
-          <Text style={{ color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100 }} className={'text-xs'}>Drivers: {totalDrivers}</Text>
+          <View className='h-2.5 w-2.5 rounded-full' style={{ backgroundColor: COLORS.textBlue500 }} />
+          <Text style={{ color: colorScheme === 'light' ? COLORS.backgroundSlate700 : COLORS.backgroundGray100 }} className='text-xs'>
+            Drivers: {totalDrivers}
+          </Text>
         </View>
       </View>
+
       <View className="pb-4 items-center">
         <Text className="text-xs text-gray-500 dark:text-gray-300">
           Add companies and drivers to get a sweet pie chart 🍰
