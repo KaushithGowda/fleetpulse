@@ -6,7 +6,7 @@ export type DriverType = {
   mobile: string;
   dateOfBirth: string;
   licenseNumber: string;
-  licenseStartDate: number;
+  licenseStartDate: string;
   address1: string;
   address2?: string;
   country: string;

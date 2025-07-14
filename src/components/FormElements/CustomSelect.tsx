@@ -53,8 +53,6 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                     labelExtractor={(item) => item.label}
                     onChange={(option) => {
                         onValueChange(option.realValue);
-                        console.log('option', option);
-                        console.log('option', option.realValue);
                     }}
                     disabled={disabled}
                     cancelText="Cancel"

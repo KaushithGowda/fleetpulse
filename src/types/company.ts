@@ -5,7 +5,7 @@ export type CompanyType = {
   website: string,
   registrationNumber: string,
   address1: string,
-  address2: string,
+  address2?: string,
   country: string,
   city: string,
   state: string,

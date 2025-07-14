@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useColorScheme } from 'nativewind';
 import { useGetCompanies } from '@/src/hooks/company/useGetCompanies';
 import { useIsFetching } from '@tanstack/react-query';
@@ -19,6 +19,7 @@ import { EntityBottomSheet } from '@/src/components/EntityBottomSheet';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { showToast } from '@/src/utils/showToast';
+import { useDeleteCompany } from '@/src/hooks/company/useDeleteCompany';
 
 const numberOfItemsPerPageList = [5, 10, 50];
 
@@ -45,11 +46,18 @@ const CompanyList = () => {
   const [page, setPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(numberOfItemsPerPageList[0]);
 
-  const { companies, total } = useGetCompanies({
+  const { companies, total, refetch } = useGetCompanies({
     search: debouncedQuery,
     limit: itemsPerPage,
     offset: page * itemsPerPage,
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      setSearchQuery('');
+      refetch();
+    }, [refetch])
+  );
 
   const ShareDetails = async () => {
     if (!selectedCompany) return;
@@ -80,11 +88,32 @@ const CompanyList = () => {
     }
   }
 
+  const { deleteCompany } = useDeleteCompany();
+
+  const handleDeleteCompanies = () => {
+    Alert.alert('Delete Driver', `Are you sure you want to Delete ${selectedCompany?.companyName} ?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        onPress: async () => {
+          if (selectedCompany?.id) {
+            const response = await deleteCompany(selectedCompany?.id);
+            if (response.success) {
+              bottomSheetRef.current?.close();
+              setSelectedCompany(null);
+              refetch();
+            }
+          }
+        }
+      },
+    ]);
+  };
+
   return (
     <View className="flex-1" style={{ backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300 }}>
       {(companies.length === 0 && !(debouncedQuery.length > 0) && !isFetching) ? (
         <View className="flex-1 items-center justify-center px-4">
-          <MaterialCommunityIcons name="truck" size={80} color={colorScheme === 'light' ? COLORS.textSlate900 : COLORS.textGray100} />
+          <MaterialCommunityIcons name="office-building-outline" size={80} color={colorScheme === 'light' ? COLORS.textSlate900 : COLORS.textGray100} />
           <Text className="text-gray-900 font-semibold dark:text-gray-100 text-center text-3xl mb-8">
             Get Started
           </Text>
@@ -92,9 +121,9 @@ const CompanyList = () => {
             Add your first company and manage your ops like a pro!
           </Text>
           <CustomButton
-            title='Add Driver'
+            title='Add Company'
             rightIconName='office-building-outline'
-            onPress={() => navigation.navigate('DriverForm')}
+            onPress={() => navigation.navigate('CompanyForm')}
           />
         </View>
       ) : (
@@ -134,8 +163,8 @@ const CompanyList = () => {
           className='relative flex-1 my-1 px-4'
         />
       )}
-      <EntityBottomSheet setState={setSelectedCompany}  bottomSheetRef={bottomSheetRef}>
-        {selectedCompany && (
+      <EntityBottomSheet setState={setSelectedCompany} bottomSheetRef={bottomSheetRef}>
+        {selectedCompany &&
           <View className="gap-y-2">
             <View className="flex-row justify-between mb-3">
               <CustomButton
@@ -144,11 +173,20 @@ const CompanyList = () => {
                 rightIconName='share-variant'
                 className='bg-green-500 px-3'
               />
-              <CustomButton
-                onPress={() => navigation.navigate('DriverForm')}
-                rightIconName='square-edit-outline'
-                className='bg-green-500 px-3'
-              />
+              <View className='flex-row gap-x-2'>
+                <CustomButton
+                  onPress={() => navigation.navigate('CompanyForm',{
+                    company: selectedCompany
+                  })}
+                  rightIconName='square-edit-outline'
+                  className='bg-green-500 px-3'
+                />
+                <CustomButton
+                  onPress={() => handleDeleteCompanies()}
+                  rightIconName='delete'
+                  className='px-3'
+                />
+              </View>
             </View>
 
             <Text className="text-slate-900 dark:text-gray-100 text-sm mb-1 px-1">Company Details</Text>
@@ -278,7 +316,6 @@ const CompanyList = () => {
               </View>
             </View>
           </View >
-        )
         }
       </EntityBottomSheet >
     </View >

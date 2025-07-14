@@ -23,7 +23,8 @@ export const useGetDrivers = ({
         error,
         isLoading,
         isError,
-        isSuccess
+        isSuccess,
+        refetch
     } = useQuery({
         queryKey: ['drivers', search, limit, offset],
         queryFn: async () => {
@@ -47,6 +48,7 @@ export const useGetDrivers = ({
     return {
         drivers: data?.data || [],
         total: data?.total || 0,
+        refetch,
         isLoading,
         isError,
         isSuccess,

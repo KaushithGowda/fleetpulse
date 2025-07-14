@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, SetStateAction, Dispatch } from 'react';
+import React, { useMemo, useState, useEffect, SetStateAction, Dispatch, useCallback } from 'react';
 
 import { DataTable, Menu } from 'react-native-paper';
 
@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { useColorScheme } from 'nativewind';
 import { useIsFetching } from '@tanstack/react-query';
+import { useFocusEffect } from '@react-navigation/native';
 
 type ColumnConfig<T> = {
     key: keyof T;
@@ -43,6 +44,23 @@ type EntityTableProps<T> = {
     filterPlaceholder?: string;
     className?: string;
     screenType: screenOptions;
+};
+
+export const formatExperience = (startDate: string) => {
+    const start = new Date(startDate);
+    const now = new Date();
+
+    if (isNaN(start.getTime())) return '-';
+
+    let years = now.getFullYear() - start.getFullYear();
+    let months = now.getMonth() - start.getMonth();
+
+    if (months < 0) {
+        years--;
+        months += 12;
+    }
+
+    return `${years} yr${years !== 1 ? 's' : ''} ${months} mo${months !== 1 ? 's' : ''}`;
 };
 
 export function EntityTable<T extends { id: string }>({
@@ -90,23 +108,6 @@ export function EntityTable<T extends { id: string }>({
         });
     }, [filteredData, sortColumn, sortDirection]);
 
-    const formatExperience = (startDate: string) => {
-        const start = new Date(startDate);
-        const now = new Date();
-
-        if (isNaN(start.getTime())) return '-';
-
-        let years = now.getFullYear() - start.getFullYear();
-        let months = now.getMonth() - start.getMonth();
-
-        if (months < 0) {
-            years--;
-            months += 12;
-        }
-
-        return `${years} yr${years !== 1 ? 's' : ''} ${months} mo${months !== 1 ? 's' : ''}`;
-    };
-
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return '-';
@@ -121,6 +122,13 @@ export function EntityTable<T extends { id: string }>({
     const from = page * itemsPerPage;
 
     useEffect(() => setPage(0), [searchQuery, itemsPerPage, setPage]);
+
+    useFocusEffect(
+        useCallback(() => {
+            setSearchQuery('');
+            setPage(0);
+        }, [setPage, setSearchQuery])
+    );
 
     return (
         <View className={className}>
@@ -224,54 +232,56 @@ export function EntityTable<T extends { id: string }>({
                     </DataTable>
                 </ScrollView>
             </ScrollView>
-            <View className={`w-screen absolute -left-4 bottom-10 pb-12 bg-gray-100 border-slate-300 dark:border-slate-700 border-t-2 z-10 ${paginationView ? 'flex' : 'hidden'}`} style={{ backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300 }}>
-                <View className="flex flex-row items-center justify-end px-10 py-2">
-                    <Text className="text-sm text-slate-900 dark:text-gray-100">Rows per page</Text>
-                    <Menu
-                        visible={menuVisible}
-                        onDismiss={() => setMenuVisible(false)}
-                        anchor={
-                            <TouchableOpacity
-                                onPress={() => setMenuVisible(prev => !prev)}
-                                className="flex flex-row items-center ml-2 px-2 py-1 border border-gray-300 dark:border-slate-700 rounded-md"
-                            >
-                                <Text className="text-sm text-slate-900 dark:text-gray-100 mr-1">{itemsPerPage}</Text>
-                                <MaterialCommunityIcons
-                                    name={menuVisible ? 'chevron-up' : 'chevron-down'}
-                                    size={18}
-                                    color={screenType === 'driver' ? COLORS.textBlue500 : COLORS.textGreen500}
+            {
+                paginationView &&
+                <View className={`w-screen absolute -left-4 bottom-10 pb-12 bg-gray-100 border-slate-300 dark:border-slate-700 border-t-2 z-10`} style={{ backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300 }}>
+                    <View className="flex flex-row items-center justify-end px-10 py-2">
+                        <Text className="text-sm text-slate-900 dark:text-gray-100">Rows per page</Text>
+                        <Menu
+                            visible={menuVisible}
+                            onDismiss={() => setMenuVisible(false)}
+                            anchor={
+                                <TouchableOpacity
+                                    onPress={() => setMenuVisible(prev => !prev)}
+                                    className="flex flex-row items-center ml-2 px-2 py-1 border border-gray-300 dark:border-slate-700 rounded-md"
+                                >
+                                    <Text className="text-sm text-slate-900 dark:text-gray-100 mr-1">{itemsPerPage}</Text>
+                                    <MaterialCommunityIcons
+                                        name={menuVisible ? 'chevron-up' : 'chevron-down'}
+                                        size={18}
+                                        color={screenType === 'driver' ? COLORS.textBlue500 : COLORS.textGreen500}
+                                    />
+                                </TouchableOpacity>
+                            }
+                        >
+                            {numberOfItemsPerPageList.map(n => (
+                                <Menu.Item
+                                    key={n}
+                                    onPress={() => {
+                                        setItemsPerPage(n);
+                                        setMenuVisible(false);
+                                    }}
+                                    title={`${n}`}
+                                    titleStyle={styles.MenuTitle}
+                                    rippleColor={screenType === 'driver' ? COLORS.textBlue500 : COLORS.textGreen500}
                                 />
-                            </TouchableOpacity>
+                            ))}
+                        </Menu>
+                    </View>
+                    <DataTable.Pagination
+                        page={page}
+                        numberOfPages={Math.ceil(totalItems / itemsPerPage)}
+                        onPageChange={setPage}
+                        label={
+                            totalItems === 0
+                                ? `0 of 0`
+                                : `${from + 1}–${from + data.length} of ${totalItems}`
                         }
-                    >
-                        {numberOfItemsPerPageList.map(n => (
-                            <Menu.Item
-                                key={n}
-                                onPress={() => {
-                                    setItemsPerPage(n);
-                                    setMenuVisible(false);
-                                }}
-                                title={`${n}`}
-                                titleStyle={styles.MenuTitle}
-                                rippleColor={screenType === 'driver' ? COLORS.textBlue500 : COLORS.textGreen500}
-                            />
-                        ))}
-                    </Menu>
+                        showFastPaginationControls
+                        numberOfItemsPerPage={itemsPerPage}
+                    />
                 </View>
-
-                <DataTable.Pagination
-                    page={page}
-                    numberOfPages={Math.ceil(totalItems / itemsPerPage)}
-                    onPageChange={setPage}
-                    label={
-                        totalItems === 0
-                            ? `0 of 0`
-                            : `${from + 1}–${from + data.length} of ${totalItems}`
-                    }
-                    showFastPaginationControls
-                    numberOfItemsPerPage={itemsPerPage}
-                />
-            </View>
+            }
         </View>
     );
 }

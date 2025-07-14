@@ -24,6 +24,7 @@ export const useGetCompanies = ({
         isLoading,
         isError,
         isSuccess,
+        refetch
     } = useQuery({
         queryKey: ['companies', search, limit, offset],
         queryFn: async () => {
@@ -47,6 +48,7 @@ export const useGetCompanies = ({
     return {
         companies: data?.data || [],
         total: data?.total || 0,
+        refetch,
         isLoading,
         isError,
         isSuccess,

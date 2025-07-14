@@ -1,8 +1,8 @@
 import React, { forwardRef } from 'react';
 import { TextInput, TextInputProps, Text, TouchableOpacity } from 'react-native';
-import { FieldError } from 'react-hook-form';
+import { FieldError, FieldErrorsImpl, Merge } from 'react-hook-form';
 import { View } from 'react-native';
-import { colorScheme } from 'nativewind';
+import { useColorScheme } from 'nativewind';
 import { COLORS } from '@/src/constants/colors';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -22,7 +22,7 @@ type CustomTextInputProps = {
     numberOfLines?: TextInputProps['numberOfLines'];
     maxLength?: TextInputProps['maxLength'];
     onBlur?: TextInputProps['onBlur'];
-    error?: FieldError | undefined;
+    error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined;
     label?: string;
     iconName?: string;
     onIconPress?: () => void;
@@ -36,6 +36,7 @@ type CustomTextInputProps = {
 
 export const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
     ({ className, placeholder, returnKeyType, keyboardType, onChangeText, onSubmitEditing, error, label, autoCapitalize, autoCorrect, isSecureEntry, toggleSecureEntry, iconName = '', onIconPress, textContentType, disabled, maxLength, multiline, numberOfLines, onBlur, value, inputMode, autoComplete, autoFocus, defaultValue, ...rest }, ref) => {
+        const {colorScheme} = useColorScheme();
         return (
             <View className="gap-y-2 relative">
                 {label && (
@@ -47,12 +48,12 @@ export const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
                 <TextInput
                     ref={ref}
                     placeholder={placeholder}
-                    placeholderTextColor={colorScheme.get() === 'light' ? COLORS.textSlate900 : COLORS.textGray100}
+                    placeholderTextColor={colorScheme === 'light' ? COLORS.textSlate900 : COLORS.textGray100}
                     returnKeyType={returnKeyType}
                     keyboardType={keyboardType}
                     onChangeText={onChangeText}
                     onSubmitEditing={onSubmitEditing}
-                    style={{ backgroundColor: colorScheme.get() === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700 }}
+                    style={{ backgroundColor: colorScheme === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700 }}
                     className={`text-slate-900 dark:text-gray-100 h-14 rounded-lg px-4 text-base ${disabled ? 'opacity-50' : ''} ${className}`}
                     onBlur={onBlur}
                     autoCapitalize={autoCapitalize}
@@ -89,10 +90,8 @@ export const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
                         <MaterialCommunityIcons name={iconName} size={24} color="#4B5563" />
                     </TouchableOpacity>
                 }
-                {error?.message && (
-                    <Text className="text-red-400 text-sm px-5">
-                        {error.message}
-                    </Text>
+                {typeof error?.message === 'string' && (
+                    <Text className="text-red-400 text-sm px-5">{error.message}</Text>
                 )}
             </View>
         );

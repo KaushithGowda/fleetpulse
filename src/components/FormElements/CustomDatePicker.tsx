@@ -5,22 +5,29 @@ import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { FieldError } from 'react-hook-form';
 import { format } from 'date-fns';
+import { COLORS } from '@/src/constants/colors';
+import { useColorScheme } from 'nativewind';
 
 type CustomDatePickerProps = {
+  className?: string;
   placeholder: string,
   label?: string;
   value: Date | undefined;
   onChange: (date: Date) => void;
   error?: FieldError;
+  disabled?: boolean
 };
 
 export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
+  className,
   placeholder,
   label,
   value,
   onChange,
   error,
+  disabled
 }) => {
+  const { colorScheme } = useColorScheme();
   const [showPicker, setShowPicker] = useState(false);
 
   const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -40,7 +47,8 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
 
       <TouchableOpacity
         onPress={() => setShowPicker(true)}
-        className="h-14 px-4 justify-center rounded-lg bg-white dark:bg-gray-800"
+        style={{ backgroundColor: colorScheme === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700 }}
+        className={`justify-center text-slate-900 dark:text-gray-100 h-14 rounded-lg px-4 text-base ${className}`}
       >
         <Text className="text-[#9CA3AF]">
           {value ? format(value, 'PPP') : placeholder}
@@ -54,6 +62,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
           display={Platform.OS === 'ios' ? 'inline' : 'default'}
           onChange={handleChange}
           maximumDate={new Date()}
+          disabled={disabled}
         />
       )}
 

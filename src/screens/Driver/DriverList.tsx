@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useColorScheme } from 'nativewind';
 import { useGetDrivers } from '@/src/hooks/driver/useGetDrivers';
 import { useIsFetching } from '@tanstack/react-query';
@@ -12,13 +13,14 @@ import { DriverType } from '@/src/types/driver';
 import { View, Text, Alert, Share, TouchableOpacity } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { CustomButton } from '@/src/components/FormElements/CustomButton';
-import { EntityTable } from '@/src/components/EntityTable';
+import { EntityTable, formatExperience } from '@/src/components/EntityTable';
 import { EntityBottomSheet } from '@/src/components/EntityBottomSheet';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { AuthTransition } from '@/src/components/transistions/auth-transition';
 import { showToast } from '@/src/utils/showToast';
+import { useDeleteDriver } from '@/src/hooks/driver/useDeleteDriver';
 
 const numberOfItemsPerPageList = [5, 10, 50];
 
@@ -37,7 +39,7 @@ const DriverList = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(searchQuery);
-    }, 0);
+    }, 300);
 
     return () => clearTimeout(handler);
   }, [searchQuery]);
@@ -45,11 +47,18 @@ const DriverList = () => {
   const [page, setPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(numberOfItemsPerPageList[0]);
 
-  const { drivers, total } = useGetDrivers({
+  const { drivers, total, refetch } = useGetDrivers({
     search: debouncedQuery,
     limit: itemsPerPage,
     offset: page * itemsPerPage
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      setSearchQuery('');
+      refetch();
+    }, [refetch])
+  );
 
   const ShareDetails = async () => {
     if (!selectedDriver) return;
@@ -72,6 +81,27 @@ const DriverList = () => {
       Alert.alert("Sharing failed", "Something went wrong while sharing driver details.");
     }
   }
+
+  const { deleteDriver } = useDeleteDriver();
+
+  const handleDeleteDriver = () => {
+    Alert.alert('Delete Driver', `Are you sure you want to Delete ${selectedDriver?.firstName} ?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        onPress: async () => {
+          if (selectedDriver?.id) {
+            const response = await deleteDriver(selectedDriver?.id);
+            if (response.success) {
+              bottomSheetRef.current?.close();
+              setSelectedDriver(null);
+              refetch();
+            }
+          }
+        }
+      },
+    ]);
+  };
 
   return (
     <View className="flex-1" style={{ backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300 }}>
@@ -128,21 +158,28 @@ const DriverList = () => {
           />
         )}
         <EntityBottomSheet setState={setSelectedDriver} bottomSheetRef={bottomSheetRef}>
-          {selectedDriver && (
+          {selectedDriver &&
             <View className="gap-y-2">
               <View className="flex-row justify-between mb-3">
                 <CustomButton
                   onPress={() => ShareDetails()}
                   rightIconName='share-variant'
-                  className='bg-blue-500 px-3'
+                  className='px-3'
                 />
-                <CustomButton
-                  onPress={() => navigation.navigate('DriverForm', {
-                    driver: selectedDriver
-                  })}
-                  rightIconName='square-edit-outline'
-                  className='bg-blue-500 px-3'
-                />
+                <View className='flex-row gap-x-2'>
+                  <CustomButton
+                    onPress={() => navigation.navigate('DriverForm', {
+                      driver: selectedDriver
+                    })}
+                    rightIconName='square-edit-outline'
+                    className='px-3'
+                  />
+                  <CustomButton
+                    onPress={() => handleDeleteDriver()}
+                    rightIconName='delete'
+                    className='px-3'
+                  />
+                </View>
               </View>
 
               <Text className="text-slate-900 dark:text-gray-100 text-sm mb-1 px-1">Driver Info</Text>
@@ -193,7 +230,7 @@ const DriverList = () => {
                 </View>
                 <View className="flex-row justify-between items-center border-b border-gray-100 dark:border-slate-700 pb-2 mb-2">
                   <Text className="text-slate-500 dark:text-slate-400 text-sm">Experience</Text>
-                  <Text className="text-slate-900 dark:text-gray-100 text-sm">{selectedDriver.licenseStartDate}</Text>
+                  <Text className="text-slate-900 dark:text-gray-100 text-sm">{formatExperience(selectedDriver.licenseStartDate)}</Text>
                 </View>
                 <View className="flex-row justify-between items-center border-b border-gray-100 dark:border-slate-700 pb-2 mb-2">
                   <Text className="text-slate-500 dark:text-slate-400 text-sm">Email</Text>
@@ -251,7 +288,7 @@ const DriverList = () => {
                 </View>
               </View>
             </View>
-          )}
+          }
         </EntityBottomSheet>
       </AuthTransition>
     </View>
