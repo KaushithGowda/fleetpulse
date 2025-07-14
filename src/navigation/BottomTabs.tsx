@@ -111,8 +111,9 @@ export default function BottomTabs() {
         tabBarPosition: 'bottom',
       })}
     >
-      <Tab.Screen name="HomeTab" component={Home} />
+      <Tab.Screen name="HomeTab" options={{title:'Home'}} component={Home} />
       <Tab.Screen name="CompanyTab" component={CompanyList} options={{
+        title:'Companies',
         headerRight: () => (
           <CustomButton
             onPress={() => navigation.navigate('CompanyForm')}
@@ -122,6 +123,7 @@ export default function BottomTabs() {
         ),
       }} />
       <Tab.Screen name="DriverTab" component={DriverList} options={{
+        title:'Drivers',
         headerRight: () => (
           <CustomButton
             onPress={() => navigation.navigate('DriverForm')}
@@ -130,7 +132,7 @@ export default function BottomTabs() {
           />
         ),
       }} />
-      <Tab.Screen name="SettingsTab" component={Settings} />
+      <Tab.Screen name="SettingsTab" options={{title:'Settings'}} component={Settings} />
     </Tab.Navigator>
   );
 }

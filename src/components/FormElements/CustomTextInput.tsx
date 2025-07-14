@@ -4,6 +4,7 @@ import { FieldError } from 'react-hook-form';
 import { View } from 'react-native';
 import { colorScheme } from 'nativewind';
 import { COLORS } from '@/src/constants/colors';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type CustomTextInputProps = {
     className?: string;
@@ -11,7 +12,7 @@ type CustomTextInputProps = {
     returnKeyType: TextInputProps['returnKeyType'];
     keyboardType: TextInputProps['keyboardType'];
     onChangeText: (text: string) => void;
-    onSubmitEditing: TextInputProps['onSubmitEditing'];
+    onSubmitEditing?: TextInputProps['onSubmitEditing'];
     value: string;
     autoCapitalize?: TextInputProps['autoCapitalize'];
     autoCorrect?: TextInputProps['autoCorrect'];
@@ -21,8 +22,10 @@ type CustomTextInputProps = {
     numberOfLines?: TextInputProps['numberOfLines'];
     maxLength?: TextInputProps['maxLength'];
     onBlur?: TextInputProps['onBlur'];
-    error: FieldError | undefined;
+    error?: FieldError | undefined;
     label?: string;
+    iconName?: string;
+    onIconPress?: () => void;
     isSecureEntry?: boolean;
     toggleSecureEntry?: () => void;
     inputMode: TextInputProps['inputMode']
@@ -32,7 +35,7 @@ type CustomTextInputProps = {
 };
 
 export const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
-    ({ className, placeholder, returnKeyType, keyboardType, onChangeText, onSubmitEditing, error, label, autoCapitalize, autoCorrect, isSecureEntry, toggleSecureEntry, textContentType, disabled, maxLength, multiline, numberOfLines, onBlur, value, inputMode, autoComplete, autoFocus, defaultValue, ...rest }, ref) => {
+    ({ className, placeholder, returnKeyType, keyboardType, onChangeText, onSubmitEditing, error, label, autoCapitalize, autoCorrect, isSecureEntry, toggleSecureEntry, iconName = '', onIconPress, textContentType, disabled, maxLength, multiline, numberOfLines, onBlur, value, inputMode, autoComplete, autoFocus, defaultValue, ...rest }, ref) => {
         return (
             <View className="gap-y-2 relative">
                 {label && (
@@ -49,7 +52,7 @@ export const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
                     keyboardType={keyboardType}
                     onChangeText={onChangeText}
                     onSubmitEditing={onSubmitEditing}
-                    style={{ backgroundColor: colorScheme.get() === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700}}
+                    style={{ backgroundColor: colorScheme.get() === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700 }}
                     className={`text-slate-900 dark:text-gray-100 h-14 rounded-lg px-4 text-base ${disabled ? 'opacity-50' : ''} ${className}`}
                     onBlur={onBlur}
                     autoCapitalize={autoCapitalize}
@@ -77,7 +80,15 @@ export const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
                         </Text>
                     </TouchableOpacity>
                 )}
-
+                {
+                    iconName?.length > 0 &&
+                    <TouchableOpacity
+                        onPress={onIconPress}
+                        className="absolute right-4 top-4"
+                    >
+                        <MaterialCommunityIcons name={iconName} size={24} color="#4B5563" />
+                    </TouchableOpacity>
+                }
                 {error?.message && (
                     <Text className="text-red-400 text-sm px-5">
                         {error.message}

@@ -18,6 +18,7 @@ import { AuthTransition } from '@/src/components/transistions/auth-transition';
 import { CustomTextInput } from '@/src/components/FormElements/CustomTextInput';
 import { CustomButton } from '@/src/components/FormElements/CustomButton';
 import { CustomDatePicker } from '@/src/components/FormElements/CustomDatePicker';
+import { DriverType } from '@/src/types/driver';
 
 const driverSchema = z.object({
     firstName: z.string().min(1, 'First name is required'),
@@ -37,7 +38,9 @@ const driverSchema = z.object({
 
 type DriverFormData = z.infer<typeof driverSchema>;
 
-const DriverForm = () => {
+const DriverForm = (driver: DriverType) => {
+    console.log(driver);
+    
     const firstNameRef = useRef<TextInput | null>(null);
     const lastNameRef = useRef<TextInput | null>(null);
     const emailRef = useRef<TextInput | null>(null);
@@ -258,7 +261,6 @@ const DriverForm = () => {
                         <CustomButton
                             title={isSubmitting ? 'Submitting...' : 'Submit'}
                             onPress={handleSubmit(onSubmit)}
-                            isLoading={isSubmitting}
                             disabled={isSubmitting}
                             className='mt-2'
                         />

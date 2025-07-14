@@ -1,6 +1,6 @@
 export type CompanyType = {
   id: string,
-  name: string,
+  companyName: string,
   establishedOn: string,
   website: string,
   registrationNumber: string,
@@ -10,8 +10,8 @@ export type CompanyType = {
   city: string,
   state: string,
   zipCode: string,
-  contactFirstName: string,
-  contactLastName: string,
-  contactEmail: string,
-  contactMobile: string
+  primaryFirstName: string,
+  primaryLastName: string,
+  primaryEmail: string,
+  primaryMobile: string
 }

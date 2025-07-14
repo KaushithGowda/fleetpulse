@@ -47,8 +47,8 @@ const PieChartGraph = ({ totalCompanies, totalDrivers }: PieChartGraphProps) => 
             showText
             textColor="black"
             radius={120}
-            innerRadius={50}
-            innerCircleColor={colorScheme === 'dark' ? '#000' : COLORS.backgroundGray200}
+            innerRadius={80}
+            innerCircleColor={colorScheme === 'dark' ? '#000' : COLORS.backgroundGray100}
             centerLabelComponent={() => (
               <PieCenterLabel totalCompanies={totalCompanies} totalDrivers={totalDrivers} />
             )}

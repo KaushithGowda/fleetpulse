@@ -20,7 +20,7 @@ export default function AppNavigator() {
 
   return (
     <Stack.Navigator screenOptions={{
-      headerShown: false
+      headerShown: true
     }}>
       <Stack.Screen
         name="Main"

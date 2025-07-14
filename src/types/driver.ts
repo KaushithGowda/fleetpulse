@@ -4,9 +4,9 @@ export type DriverType = {
   lastName: string;
   email: string;
   mobile: string;
-  dob: string;
+  dateOfBirth: string;
   licenseNumber: string;
-  experience: number;
+  licenseStartDate: number;
   address1: string;
   address2?: string;
   country: string;

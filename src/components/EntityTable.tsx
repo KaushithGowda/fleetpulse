@@ -1,4 +1,12 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, SetStateAction, Dispatch } from 'react';
+
+import { DataTable, Menu } from 'react-native-paper';
+
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import { COLORS } from '@/src/constants/colors';
+
+import { CustomTextInput } from '@/src/components/FormElements/CustomTextInput';
 import {
     View,
     Text,
@@ -6,14 +14,8 @@ import {
     TouchableOpacity,
     StyleSheet,
 } from 'react-native';
-
-import { DataTable, Menu } from 'react-native-paper';
-
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import { COLORS } from '@/src/constants/colors';
-import { CustomTextInput } from './FormElements/CustomTextInput';
-import { colorScheme, useColorScheme } from 'nativewind';
+import { useColorScheme } from 'nativewind';
+import { useIsFetching } from '@tanstack/react-query';
 
 type ColumnConfig<T> = {
     key: keyof T;
@@ -26,6 +28,15 @@ type screenOptions = 'company' | 'driver'
 
 type EntityTableProps<T> = {
     data: T[];
+    paginationView: boolean,
+    searchQuery: string,
+    setSearchQuery: Dispatch<SetStateAction<string>>
+    itemsPerPage: number,
+    setItemsPerPage: Dispatch<SetStateAction<number>>,
+    page: number,
+    setPage: Dispatch<SetStateAction<number>>,
+    numberOfItemsPerPageList: number[],
+    totalItems: number,
     columns: ColumnConfig<T>[];
     renderLeadingCell?: (item: T) => React.ReactNode;
     onRowPress?: (item: T) => void;
@@ -34,10 +45,17 @@ type EntityTableProps<T> = {
     screenType: screenOptions;
 };
 
-const numberOfItemsPerPageList = [5, 10, 50];
-
 export function EntityTable<T extends { id: string }>({
     data,
+    paginationView,
+    searchQuery,
+    setSearchQuery,
+    itemsPerPage,
+    setItemsPerPage,
+    page,
+    setPage,
+    numberOfItemsPerPageList,
+    totalItems,
     columns,
     onRowPress,
     filterPlaceholder = 'Search...',
@@ -45,9 +63,8 @@ export function EntityTable<T extends { id: string }>({
     screenType,
 }: EntityTableProps<T>) {
     const { colorScheme } = useColorScheme();
-    const [searchQuery, setSearchQuery] = useState('');
-    const [itemsPerPage, setItemsPerPage] = useState(numberOfItemsPerPageList[0]);
-    const [page, setPage] = useState(0);
+    const isFetching = useIsFetching();
+
     const [menuVisible, setMenuVisible] = useState(false);
 
     const [sortColumn, setSortColumn] = useState<keyof T | null>(null);
@@ -73,10 +90,37 @@ export function EntityTable<T extends { id: string }>({
         });
     }, [filteredData, sortColumn, sortDirection]);
 
-    const from = page * itemsPerPage;
-    const to = Math.min((page + 1) * itemsPerPage, sortedData.length);
+    const formatExperience = (startDate: string) => {
+        const start = new Date(startDate);
+        const now = new Date();
 
-    useEffect(() => setPage(0), [searchQuery, itemsPerPage]);
+        if (isNaN(start.getTime())) return '-';
+
+        let years = now.getFullYear() - start.getFullYear();
+        let months = now.getMonth() - start.getMonth();
+
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+
+        return `${years} yr${years !== 1 ? 's' : ''} ${months} mo${months !== 1 ? 's' : ''}`;
+    };
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '-';
+
+        return date.toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+    };
+
+    const from = page * itemsPerPage;
+
+    useEffect(() => setPage(0), [searchQuery, itemsPerPage, setPage]);
 
     return (
         <View className={className}>
@@ -88,7 +132,7 @@ export function EntityTable<T extends { id: string }>({
                 returnKeyType='search'
                 disabled={false}
                 className='my-5'
-                error={{}}
+                keyboardType={'default'}
             />
             <ScrollView>
                 <ScrollView horizontal>
@@ -130,45 +174,57 @@ export function EntityTable<T extends { id: string }>({
                                                         : 'arrow-up-down'
                                                 }
                                                 size={12}
-                                                color={screenType === 'company' ? COLORS.textBlue500 : COLORS.textGreen500}
+                                                color={screenType === 'driver' ? COLORS.textBlue500 : COLORS.textGreen500}
                                             />
                                         )}
                                     </View>
                                 </DataTable.Title>
                             ))}
                         </DataTable.Header>
-
-                        {sortedData.slice(from, to).map(row => (
-                            <TouchableOpacity key={row.id} onPress={() => onRowPress?.(row)}>
-                                <DataTable.Row>
-                                    <DataTable.Cell style={styles.DataCell}>
-                                        <View className={`w-8 h-8 flex rounded-full justify-center items-center" ${screenType === 'company' ? "bg-green-500" : "bg-blue-500"}`}>
-                                            <Text className="text-white font-bold text-lg text-center">
-                                                {String(row[columns[0].key]).charAt(0)}
-                                            </Text>
-                                        </View>
-                                    </DataTable.Cell>
-                                    {columns.map(col => (
-                                        <DataTable.Cell key={String(col.key)} style={{ minWidth: col.width || 150 }}>
-                                            <Text
-                                                className="text-sm text-slate-900 dark:text-gray-100"
-                                                numberOfLines={1}
-                                                ellipsizeMode="tail"
-                                            >
-                                                {String(row[col.key]).length > 15
-                                                    ? String(row[col.key]).slice(0, 15) + '…'
-                                                    : String(row[col.key])}
-                                            </Text>
-                                        </DataTable.Cell>
+                        {
+                            (sortedData?.length <= 0 && !isFetching && searchQuery.length > 0) ?
+                                <View className='flex-1 items-start justify-center px-4 py-5'>
+                                    <Text className='text-xl dark:text-gray-100 text-slate-900'>
+                                        No records found ⚠️
+                                    </Text>
+                                </View>
+                                :
+                                <>
+                                    {sortedData.map(row => (
+                                        <TouchableOpacity key={row.id} onPress={() => onRowPress?.(row)}>
+                                            <DataTable.Row>
+                                                <DataTable.Cell style={styles.DataCell}>
+                                                    <View className={`w-8 h-8 flex rounded-full justify-center items-center" ${screenType === 'company' ? "bg-green-500" : "bg-blue-500"}`}>
+                                                        <Text className="text-white font-bold text-lg text-center">
+                                                            {String(row[columns[0].key]).charAt(0)}
+                                                        </Text>
+                                                    </View>
+                                                </DataTable.Cell>
+                                                {columns.map(col => (
+                                                    <DataTable.Cell key={String(col.key)} style={{ minWidth: col.width || 150 }}>
+                                                        <Text className="text-sm text-slate-900 dark:text-gray-100" numberOfLines={1} ellipsizeMode="tail">
+                                                            {(() => {
+                                                                const value = String(row[col.key]);
+                                                                if (col.key === 'dateOfBirth' || col.key === 'establishedOn') {
+                                                                    return formatDate(value);
+                                                                }
+                                                                if (col.key === 'licenseStartDate') {
+                                                                    return formatExperience(value);
+                                                                }
+                                                                return value.length > 15 ? value.slice(0, 15) + '…' : value;
+                                                            })()}
+                                                        </Text>
+                                                    </DataTable.Cell>
+                                                ))}
+                                            </DataTable.Row>
+                                        </TouchableOpacity>
                                     ))}
-                                </DataTable.Row>
-                            </TouchableOpacity>
-                        ))}
+                                </>
+                        }
                     </DataTable>
                 </ScrollView>
             </ScrollView>
-
-            <View className='w-screen absolute -left-4 bottom-10 pb-12 bg-gray-100 border-slate-300 dark:border-slate-700 border-t-2 z-10' style={{ backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300 }}>
+            <View className={`w-screen absolute -left-4 bottom-10 pb-12 bg-gray-100 border-slate-300 dark:border-slate-700 border-t-2 z-10 ${paginationView ? 'flex' : 'hidden'}`} style={{ backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300 }}>
                 <View className="flex flex-row items-center justify-end px-10 py-2">
                     <Text className="text-sm text-slate-900 dark:text-gray-100">Rows per page</Text>
                     <Menu
@@ -205,9 +261,13 @@ export function EntityTable<T extends { id: string }>({
 
                 <DataTable.Pagination
                     page={page}
-                    numberOfPages={Math.ceil(sortedData.length / itemsPerPage)}
+                    numberOfPages={Math.ceil(totalItems / itemsPerPage)}
                     onPageChange={setPage}
-                    label={`${from + 1}-${to} of ${sortedData.length}`}
+                    label={
+                        totalItems === 0
+                            ? `0 of 0`
+                            : `${from + 1}–${from + data.length} of ${totalItems}`
+                    }
                     showFastPaginationControls
                     numberOfItemsPerPage={itemsPerPage}
                 />

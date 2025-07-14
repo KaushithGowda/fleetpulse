@@ -5,10 +5,10 @@ export const PieCenterLabel = ({ totalCompanies, totalDrivers }: { totalCompanie
     const { colorScheme } = useColorScheme();
     return (
         <View className='flex-1 pb-5 justify-end items-center'>
-            <Text className={`text-xs font-bold ${colorScheme === 'dark' ? 'text-white' : 'text-black'}`}>
+            <Text className={`text-sm font-bold ${colorScheme === 'dark' ? 'text-white' : 'text-black'}`}>
                 {(totalCompanies + totalDrivers === 0) ? 0 : Math.round((totalCompanies / (totalCompanies + totalDrivers)) * 100)}%
             </Text>
-            <Text className={`text-xs ${colorScheme === 'dark' ? 'text-white' : 'text-black'}`}>
+            <Text className={`font-bold italic text-sm ${colorScheme === 'dark' ? 'text-white' : 'text-black'}`}>
                 {totalDrivers > totalCompanies ? 'Drivers' : 'Companies'}
             </Text>
         </View>

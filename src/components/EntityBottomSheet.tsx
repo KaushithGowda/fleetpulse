@@ -1,11 +1,12 @@
-import React, { ReactNode, useCallback } from "react";
+/* eslint-disable react-native/no-inline-styles */
+import React, { Dispatch, ReactNode, SetStateAction, useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
 
-import { colorScheme } from 'nativewind';
+import { useColorScheme } from 'nativewind';
 
 import { COLORS } from '@/src/constants/colors';
 
@@ -13,10 +14,12 @@ import { BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typesc
 
 type EntityBottomSheetProps = {
   bottomSheetRef: any;
+  setState: Dispatch<SetStateAction<any>>
   children: ReactNode;
 };
 
-export const EntityBottomSheet = ({ bottomSheetRef, children }: EntityBottomSheetProps) => {
+export const EntityBottomSheet = ({ bottomSheetRef,setState, children }: EntityBottomSheetProps) => {
+  const { colorScheme } = useColorScheme();
   const renderBackdrop = useCallback(
     (props: React.JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
       <BottomSheetBackdrop
@@ -24,9 +27,10 @@ export const EntityBottomSheet = ({ bottomSheetRef, children }: EntityBottomShee
         disappearsOnIndex={-1}
         appearsOnIndex={0}
         pressBehavior="close"
+        onPress={() => setState(null)}
       />
     ),
-    []
+    [setState]
   );
 
   return (
@@ -35,8 +39,16 @@ export const EntityBottomSheet = ({ bottomSheetRef, children }: EntityBottomShee
       index={-1}
       snapPoints={['50%', '70%', '100%']}
       backdropComponent={renderBackdrop}
-      handleStyle={styles.handleStyle}
-      handleIndicatorStyle={styles.handleIndicatorStyle}
+      handleStyle={{
+        backgroundColor: colorScheme === 'light' ? COLORS.textGray100 : '#000',
+        borderTopEndRadius: 10,
+        borderTopStartRadius: 10
+      }}
+      handleIndicatorStyle={{
+        backgroundColor: colorScheme === 'light' ? '#000' : '#fff',
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+      }}
     >
       <BottomSheetScrollView
         className="bg-gray-100 dark:bg-black"
@@ -54,13 +66,5 @@ const styles = StyleSheet.create({
   containerStyle: {
     paddingHorizontal: 20,
     paddingBottom: 100
-  },
-  handleIndicatorStyle: {
-    backgroundColor: colorScheme ? COLORS.textGray100 : COLORS.textSlate900
-  },
-  handleStyle: {
-    backgroundColor: colorScheme ? '#000' : '#fff',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
   }
 })
