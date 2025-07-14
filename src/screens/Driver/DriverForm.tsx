@@ -13,7 +13,7 @@ import { z } from 'zod';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { AuthTransition } from '@/src/components/transistions/auth-transition';
+import { Transition } from '@/src/components/Transistions/Transition';
 import { CustomTextInput } from '@/src/components/FormElements/CustomTextInput';
 import { CustomButton } from '@/src/components/FormElements/CustomButton';
 import { CustomDatePicker } from '@/src/components/FormElements/CustomDatePicker';
@@ -148,7 +148,7 @@ const DriverForm = () => {
             className="flex-1 px-6"
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-            <AuthTransition>
+            <Transition>
                 <ScrollView
                     contentContainerStyle={[styles.contentContainerStyle, { paddingBottom: bottom }]}
                     keyboardShouldPersistTaps="handled"
@@ -343,7 +343,7 @@ const DriverForm = () => {
                         </View>
                     </View>
                 </ScrollView>
-            </AuthTransition>
+            </Transition>
         </KeyboardAvoidingView>
     );
 };

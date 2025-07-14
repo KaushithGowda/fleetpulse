@@ -4,7 +4,7 @@ import { Text, View } from "react-native";
 import { PieChart } from 'react-native-gifted-charts';
 import { PieCenterLabel } from "./PieChartLabel";
 import { useColorScheme } from "nativewind";
-import { PieAnimation } from "@/src/components/transistions/PieAnimation";
+import { PieAnimation } from "@/src/components/Transistions/PieAnimation";
 
 type PieChartGraphProps = {
   totalCompanies: number;

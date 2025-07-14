@@ -18,7 +18,7 @@ import { EntityBottomSheet } from '@/src/components/EntityBottomSheet';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomSheet from '@gorhom/bottom-sheet';
-import { AuthTransition } from '@/src/components/transistions/auth-transition';
+import { Transition } from '@/src/components/Transistions/Transition';
 import { showToast } from '@/src/utils/showToast';
 import { useDeleteDriver } from '@/src/hooks/driver/useDeleteDriver';
 
@@ -105,7 +105,7 @@ const DriverList = () => {
 
   return (
     <View className="flex-1" style={{ backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300 }}>
-      <AuthTransition>
+      <Transition>
         {(drivers.length === 0 && !(debouncedQuery.length > 0) && !isFetching) ? (
           <View className="flex-1 items-center justify-center px-4">
             <MaterialCommunityIcons name="truck" size={80} color={colorScheme === 'light' ? COLORS.textSlate900 : COLORS.textGray100} />
@@ -149,7 +149,7 @@ const DriverList = () => {
             totalItems={total}
             screenType='driver'
             filterPlaceholder="Search drivers..."
-            paginationView={selectedDriver === null}
+            paginationView={selectedDriver !== null ? false : true}
             onRowPress={(driver) => {
               setSelectedDriver(driver);
               bottomSheetRef.current?.snapToIndex(0);
@@ -290,7 +290,7 @@ const DriverList = () => {
             </View>
           }
         </EntityBottomSheet>
-      </AuthTransition>
+      </Transition>
     </View>
   );
 };

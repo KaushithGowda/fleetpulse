@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 
 import { showToast } from '@/src/utils/showToast';
-import { AuthTransition } from '@/src/components/transistions/auth-transition';
+import { Transition } from '@/src/components/Transistions/Transition';
 
 const Settings = () => {
   const insets = useSafeAreaInsets();
@@ -48,7 +48,7 @@ const Settings = () => {
         backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300
       }}
     >
-      <AuthTransition>
+      <Transition>
         <View className="flex-row items-center justify-between mb-5 p-4 rounded-xl" style={{ backgroundColor: colorScheme === 'light' ? COLORS.backgroundGray100 : COLORS.backgroundSlate700 }}>
           <View className="flex-row items-center gap-4">
             <View className={`w-20 h-20 flex rounded-full justify-center items-center bg-blue-500`}>
@@ -88,7 +88,7 @@ const Settings = () => {
             <MaterialIcons name="logout" size={25} color={COLORS.textRed600} />
           </TouchableOpacity>
         </View>
-      </AuthTransition>
+      </Transition>
     </View>
   );
 };

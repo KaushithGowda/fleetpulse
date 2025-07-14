@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Animated } from 'react-native'
 import { useIsFocused } from '@react-navigation/native'
 
-export const AuthTransition = ({ children }: { children: React.ReactNode }) => {
+export const Transition = ({ children }: { children: React.ReactNode }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current
   const isFocused = useIsFocused()
   const [isVisible, setIsVisible] = useState(false)

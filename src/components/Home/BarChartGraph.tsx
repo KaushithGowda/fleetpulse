@@ -7,7 +7,7 @@ import { COLORS } from "@/src/constants/colors";
 import { BarChart } from "react-native-gifted-charts";
 
 import { Text, TouchableOpacity, View } from "react-native";
-import { BarAnimation } from "@/src/components/transistions/BarAnimation";
+import { BarAnimation } from "@/src/components/Transistions/BarAnimation";
 
 type Range = 'week' | 'month' | 'year';
 

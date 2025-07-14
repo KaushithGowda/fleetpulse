@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { AuthTransition } from '@/src/components/transistions/auth-transition';
+import { Transition } from '@/src/components/Transistions/Transition';
 import { CustomTextInput } from '@/src/components/FormElements/CustomTextInput';
 import { CustomButton } from '@/src/components/FormElements/CustomButton';
 import { CustomDatePicker } from '@/src/components/FormElements/CustomDatePicker';
@@ -154,7 +154,7 @@ const CompanyForm = () => {
             className="flex-1 px-6"
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-            <AuthTransition>
+            <Transition>
                 <ScrollView
                     contentContainerStyle={[styles.container, { paddingBottom: bottom }]}
                     keyboardShouldPersistTaps="handled"
@@ -366,7 +366,7 @@ const CompanyForm = () => {
                         </View>
                     </View>
                 </ScrollView>
-            </AuthTransition>
+            </Transition>
         </KeyboardAvoidingView>
     );
 };

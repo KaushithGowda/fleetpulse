@@ -8,7 +8,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { COLORS } from '@/src/constants/colors';
 
-import { AuthTransition } from '@/src/components/transistions/auth-transition';
+import { Transition } from '@/src/components/Transistions/Transition';
 
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 
@@ -77,7 +77,7 @@ const Home = () => {
       backgroundColor: colorScheme === 'dark' ? COLORS.backgroundSlate800 : COLORS.backgroundGray300,
       paddingBottom: insets.bottom + 50
     }}>
-      <AuthTransition>
+      <Transition>
         <ScrollView
           contentContainerStyle={styles.contentContainerStyle}
           keyboardShouldPersistTaps="handled"
@@ -117,7 +117,7 @@ const Home = () => {
             </>
           )}
         </ScrollView>
-      </AuthTransition>
+      </Transition>
     </View>
   );
 };

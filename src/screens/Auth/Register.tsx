@@ -8,7 +8,7 @@ import { registerSchema } from '@/src/schemas/register.schema'
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { AuthTransition } from '@/src/components/transistions/auth-transition';
+import { Transition } from '@/src/components/Transistions/Transition';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   View,
@@ -72,7 +72,7 @@ const Register = () => {
       className="flex-1 px-6"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <AuthTransition>
+      <Transition>
         <ScrollView
           contentContainerStyle={styles.contentContainerStyle}
           keyboardShouldPersistTaps="handled"
@@ -148,7 +148,7 @@ const Register = () => {
             </View>
           </View>
         </ScrollView>
-      </AuthTransition>
+      </Transition>
     </KeyboardAvoidingView>
   )
 }
