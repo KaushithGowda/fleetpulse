@@ -55,9 +55,17 @@ const CompanyList = () => {
 
   useFocusEffect(
     useCallback(() => {
-      setSearchQuery('');
       refetch();
     }, [refetch])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setSelectedCompany(null);
+        setSearchQuery('')
+      };
+    }, [])
   );
 
   const ShareDetails = async () => {

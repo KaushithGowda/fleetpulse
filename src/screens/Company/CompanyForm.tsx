@@ -98,7 +98,7 @@ const CompanyForm = () => {
                     companyName: '',
                     establishedOn: undefined,
                     registrationNumber: '',
-                    website: '',
+                    website: 'https://',
                     address1: '',
                     address2: '',
                     country: '',

@@ -90,7 +90,7 @@ const DriverForm = () => {
         useCallback(() => {
             if (!driver) {
                 reset({
-                    id: '',
+                    id: undefined,
                     firstName: '',
                     lastName: '',
                     email: '',

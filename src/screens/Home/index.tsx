@@ -25,7 +25,7 @@ const Home = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any>>()
 
   const [selectedView, setSelectedView] = useState<'companies' | 'drivers'>('companies');
-  const [selectedRange, setSelectedRange] = useState<'week' | 'month' | 'year'>('month');
+  const [selectedRange, setSelectedRange] = useState<'week' | 'month' | 'year'>('week');
 
   const getLabels = (range: 'week' | 'month' | 'year') => {
     if (range === 'year') return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

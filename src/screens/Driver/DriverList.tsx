@@ -55,9 +55,17 @@ const DriverList = () => {
 
   useFocusEffect(
     useCallback(() => {
-      setSearchQuery('');
       refetch();
     }, [refetch])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setSelectedDriver(null);
+        setSearchQuery('')
+      };
+    }, [])
   );
 
   const ShareDetails = async () => {
